@@ -1,0 +1,252 @@
+<app-layout name="">
+    <!-- DataTables -->
+    <link href="assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- Responsive datatable examples -->
+    <link href="assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet" type="text/css" /> 
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <h5 class="card-header bg-transparent border-bottom text-uppercase">DANH SÁCH CÁC LOẠI PHÒNG</h5>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <a href="/#!/room" class="btn btn-primary waves-effect waves-light mb-2 me-2"><i class="bx bx-arrow-back me-1"></i>Danh sách phòng</a>
+                        </div>
+                        <div>
+                            <input type="search" class="form-control" placeholder="Tìm kiếm" id="search-datatable-room-type">
+                        </div>
+                    </div>
+                    <!-- table content -->
+                    <table id="datatable-room-type" class="table table-hover table-reponsive align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Tên loại phòng</th>
+                                <th>Diện tích</th>
+                                <th>Hút thuốc</th>
+                                <th>Chính sách hủy</th>
+                                <th>Chính sách khác</th>
+                                <th>Mô tả</th>
+                                <th>Thông tin khác</th>
+                                <th style="text-align: center;">#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat = "item in roomTypes">
+                                <td>{{item.name}}</td>
+                                <td>{{item.area}} M<sup>2</sup></td>
+                                <td>
+                                    <span>{{item.isSmoking ? 'Có' : 'Không'}}</span>
+                                </td>
+                                <td>
+                                    <a ng-click="roomTypeDetail(item)" class="btn btn-outline-secondary text-secondary" data-bs-toggle="modal" data-bs-target="#showCancellationPolicy">
+                                    <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a ng-click="roomTypeDetail(item)" class="btn btn-outline-secondary text-secondary" data-bs-toggle="modal" data-bs-target="#showOtherPolicy">
+                                    <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a ng-click="roomTypeDetail(item)" class="btn btn-outline-secondary text-secondary" data-bs-toggle="modal" data-bs-target="#showDescription">
+                                    <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button id="dropdownMenuButton"
+                                            class="btn ms-3"
+                                            data-bs-toggle="dropdown" aria-expanded="false"><i class="bx bx-dots-horizontal-rounded font-size-20"></i></button>
+
+                                        <div aria-labelledby="dropdownMenuButton" class="dropdown-menu dropdown-menu-start">
+                                            <button class="dropdown-item btn waves-light" title="View" data-bs-toggle="modal" data-bs-target="#listSupplyRoom" ng-click="loadSupplyRoomType(item.code)">Vật tư</button>
+                                            <div class="dropdown-divider"></div>
+                                            <button class="dropdown-item btn waves-light" title="View" data-bs-toggle="modal" data-bs-target="#listImageRoom" ng-click="loadImageRoomType(item.code)">Ảnh phòng</button>
+                                            <div class="dropdown-divider"></div>
+                                            <button class="dropdown-item btn waves-light" title="View" data-bs-toggle="modal" data-bs-target="#viewOtherRoom" ng-click="roomTypeDetail(item)">Xem thêm</button>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="align-middle">
+                                    <a class="btn btn-outline-secondary text-secondary" ng-click="edit(item)" href="/#!/room-type/update/{{item.id}}" title="Edit">
+                                        <i class="fas fa-pencil-alt"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!-- Model view showOtherPolicy -->
+                    <div class="modal fade" id="showOtherPolicy" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="showOtherPolicy">Chính sách khác</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <pre style="font-size: 16px;">{{roomType.otherPolicy}}</pre>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                    <!-- End model view showOtherPolicy-->
+
+                     <!-- Model view showCancellationPolicy -->
+                    <div class="modal fade" id="showCancellationPolicy" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="showCancellationPolicy">Chính sách hủy</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <pre style="font-size: 16px;">{{roomType.cancellationPolicy}}</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End model view showCancellationPolicy-->
+
+                    <!-- Model view showDescription -->
+                    <div class="modal fade" id="showDescription" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="showDescriptionLabel">Mô tả loại phòng</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <pre style="font-size: 16px;">{{roomType.description}}</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End model view showDescription-->
+
+                    <!-- Model view other room type -->
+                    <div class="modal fade" id="viewOtherRoom" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="viewOtherRoomLabel">Xem thêm</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="table-reponsive">
+                                        <table class="table table-hover align-middle">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Phụ phí người lớn</th>
+                                                    <th>Phụ phí trẻ em</th>
+                                                    <th>Số lượng người lớn</th>
+                                                    <th>Số lượng trẻ em</th>
+                                                    <th>Số người lớn được thêm</th>
+                                                    <th>Số trẻ em được thêm</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>{{roomType.adultSurcharge | currency: '' : 0}} đ</td>
+                                                    <td>{{roomType.childSurcharge | currency: '' : 0}} đ</td>
+                                                    <td>{{roomType.numAdults}}</td>
+                                                    <td>{{roomType.numChilds}}</td>
+                                                    <td>{{roomType.maxAdultsAdd}}</td>
+                                                    <td>{{roomType.maxChildsAdd}}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Đóng</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End model view other room type-->
+
+                    <!-- Model supply room -->
+                    <div class="modal fade" id="listSupplyRoom" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="listSupplyRoomLabel">Vật tư phòng</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="table-reponsive">
+                                        <table class="table table-hover align-middle">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Tên</th>
+                                                    <th>Số lượng</th>
+                                                    <th>Đơn vị</th>
+                                                    <th>Mô tả</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="item in supplyRoomTypes">
+                                                    <td>{{item.supply.name}}</td>
+                                                    <td>{{item.quantity}}</td>
+                                                    <td>{{item.supply.unit}}</td>
+                                                    <td>{{item.supply.description}}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Đóng</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End model supply room -->
+
+                    <!-- Model image room -->
+                    <div class="modal fade" id="listImageRoom" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="listImageRoomLabel">Ảnh phòng</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <label ng-repeat="item in imageRoomTypes">
+                                        <img width="900px" class="img-responsive img-thumbnail" ng-src="{{url(item.fileName)}}" alt="error load image">
+                                    </label>
+                                        
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Đóng</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End model image room -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div ng-show="isLoading" class="loader"> 
+        <div class="loader-inner">
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+        </div>
+    </div>
+</app-layout>

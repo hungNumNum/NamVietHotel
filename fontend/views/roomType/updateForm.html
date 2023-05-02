@@ -1,0 +1,179 @@
+<app-layout name="">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-sm-4">
+                            <h4>Cập nhập loại phòng</h4>
+                        </div>
+                        <div class="col-sm-8">
+                            <div class="text-sm-end">
+                                <a href="/#!/room-type" class="btn btn-primary waves-effect waves-light me-2"><i class="fas fa-list-ul me-2"></i>Danh sách loại phòng</a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Form update room type-->
+                    <form>
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label for="formrow-name-input" class="form-label">Tên loại phòng</label>
+                                <input ng-model="form.name" type="text" class="form-control" id="formrow-name-input"
+                                    placeholder="Enter name room type" disabled>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="formrow-price-input" class="form-label">Giá</label>
+                                <div class="input-group">
+                                    <input ng-model="form.price" type="text" class="form-control" id="formrow-price-input">
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="formrow-area-input" class="form-label">Diện tích</label>
+                                <input ng-model="form.area" type="text" class="form-control" id="formrow-area-input"
+                                    placeholder="Nhập diện tích">
+                            </div>
+                            <div class="col-md-3 mb-3 text-sm-center">
+                                <label for="formrow-isSmoking-input" class="form-label">Hút thuốc</label>
+                                <div >
+                                    <input type="checkbox" id="formrow-isSmoking-input" switch="bool" ng-model="form.isSmoking"/>
+                                    <label for="formrow-isSmoking-input" data-on-label="On" data-off-label="Off"></label>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label for="formrow-adultSurcharge-input" class="form-label">Phụ phí người lớn</label>
+                                <div class="input-group">
+                                    <input ng-model="form.adultSurcharge" type="text" class="form-control" id="formrow-adultSurcharge-input"
+                                        placeholder="Nhập phụ phí người lớn">
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="formrow-childSurcharge-input" class="form-label">Phụ phí trẻ em</label>
+                                <input ng-model="form.childSurcharge" type="text" class="form-control" id="formrow-childSurcharge-input"
+                                    placeholder="Nhập phụ phí trẻ em">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="formrow-maxAdultAdd-input" class="form-label">Số người lớn tối đa thêm</label>
+                                <div class="input-group">
+                                    <input ng-model="form.maxAdultsAdd" type="text" class="form-control" id="formrow-maxAdultAdd-input" placeholder="Nhập số người lớn tối đa thêm"> 
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="formrow-maxChildAdd-input" class="form-label">Số trẻ em tối đa thêm</label>
+                                <div class="input-group">
+                                    <input ng-model="form.maxChildsAdd" type="text" class="form-control" id="formrow-maxChildAdd-input" placeholder="Nhập số trẻ em tối đa thêm">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3 mb-3 mt-auto">
+                                <a class="btn btn-outline-primary waves-effect waves-light w-100" data-bs-toggle="modal" data-bs-target="#chooseSupply">
+                                    <i class="fas fa-couch mx-auto me-3"></i>Vật tư
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-3 mt-auto">
+                                <a class="btn btn-outline-primary waves-effect waves-light w-100" data-bs-toggle="modal" data-bs-target="#imageRoom">
+                                    <i class="bx bxs-image-alt mx-auto me-3 font-size-15"></i>Ảnh phòng</a>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="formrow-cancellationPolicy-input" class="form-label">Chính sách hủy</label>
+                            <textarea ng-model="form.cancellationPolicy" id="formrow-cancellationPolicy-input" class="form-control" rows="3"
+                            placeholder="Nhập chính sách hủy"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="formrow-otherPolicy-input" class="form-label">Chính sách khác</label>
+                            <textarea ng-model="form.otherPolicy" id="formrow-otherPolicy-input" class="form-control" rows="3"
+                            placeholder="Nhập chính sách khác"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="formrow-description-input">Mô tả</label>
+                            <textarea ng-model="form.description" id="formrow-description-input" class="form-control" rows="3"
+                                placeholder="Nhập mô tả"></textarea>
+                        </div>
+                        <div>
+                            <button ng-click="update()" class="btn btn-warning waves-effect waves-light mb-2">Cập nhập</button>
+                            <button ng-click="reset()" class="btn btn-danger waves-effect waves-light mb-2">Làm mới</button>
+                        </div>
+                        <!-- Modal supply-->
+                        <div class="modal fade" id="chooseSupply" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="chooseSupplyLabel">Danh sách vật tư</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body ">
+                                        <div class="table-reponsive">
+                                            <table class="table table-hover align-middle mb-0">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th style="width: 20px;" class="align-middle">
+                                                            <div class="form-check form-check-success font-size-16">
+                                                                <input class="form-check-input" type="checkbox" id="checkAll" ng-model="checkAll">
+                                                            </div>
+                                                        </th>
+                                                        <th>Tên</th>
+                                                        <th>Mô tả</th>
+                                                        <th>Số lượng</th>
+                                                        <th>Đơn vị</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr ng-repeat="supply in supplys">
+                                                        <td style="width: 20px;" class="align-middle">
+                                                            <div class="form-check form-check-success font-size-16">
+                                                                <input class="form-check-input" type="checkbox" ng-model="supply.checked" ng-change="supplyChanged(supply)">
+                                                            </div>
+                                                        </td>
+                                                        <td>{{supply.name}}</td>
+                                                        <td>{{supply.unit}}</td>
+                                                        <td>{{supply.description}}</td>
+                                                        <td>
+                                                            <input type="number" class="form-control" ng-model="supply.count" ng-disabled="!supply.checked" ng-change="supplyChanged(supply)">
+                                                        </td>
+                                                    </tr>  
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Đóng</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End modal supply -->
+
+                        <!-- Modal image room-->
+                        <div class="modal fade" id="imageRoom" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="ImageRoomLabel">Danh sách ảnh phòng</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <input type="file" class="form-control" name="imageRoom" id="formrow-image-input" accept="image/*"
+                                            multiple onchange="angular.element(this).scope().uploadImageStorage(this.files)">
+                                        </div>
+                                        <label ng-repeat="imageRoom in chooseImageRooms">
+                                            <img width="900px" class="img-responsive img-thumbnail" ng-src="{{url(imageRoom.fileName)}}" alt="error load image" ng-dblclick="deleteImageStorage(imageRoom.fileName)">
+                                        </label>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Đóng</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End modal image room -->
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</app-layout>

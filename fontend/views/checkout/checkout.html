@@ -1,0 +1,260 @@
+<app-layout>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <h5 class="card-header bg-transparent border-bottom text-uppercase">
+                    TRẢ PHÒNG
+                </h5>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <h5 class="mb-2">Khách hàng</h5>
+                            <table class="table mb-0 table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th scope="row" style="width: 300px;">Họ và tên</th>
+                                        <td>{{invoiceDetail.invoice.booking.customer.fullName}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">CCCD/CMND</th>
+                                        <td>{{invoiceDetail.invoice.booking.customer.peopleId}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Email</th>
+                                        <td>{{invoiceDetail.invoice.booking.customer.email}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">SĐT</th>
+                                        <td>{{invoiceDetail.invoice.booking.customer.phoneNumber}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Địa chỉ</th>
+                                        <td>{{invoiceDetail.invoice.booking.customer.address}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-6">
+                            <h5 class="mb-2">Phòng {{invoiceDetail.room.code}}</h5>
+                            <table class="table mb-0 table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th scope="row" style="width: 300px;">Mã đặt</th>
+                                        <td>{{invoiceDetail.invoice.booking.code}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Loại phòng</th>
+                                        <td>{{invoiceDetail.room.roomType.name}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Giá phòng</th>
+                                        <td>{{invoiceDetail.roomPrice | currency: '' : 0}}₫</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Ngày nhận</th>
+                                        <td>{{invoiceDetail.checkinExpected | date:'dd/MM/yyyy'}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Ngày trả</th>
+                                        <td>{{invoiceDetail.checkoutExpected | date:'dd/MM/yyyy'}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- end card body -->
+                <div class="card-body border-top">
+                    <h5 class="fw-semibold flex-grow-1">Dịch vụ</h5>
+                    <div class="table-responsive">
+                        <table class="table align-middle table-nowrap">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Tên dịch vụ</th>
+                                    <th scope="col">Từ ngày</th>
+                                    <th scope="col">Đến ngày</th>
+                                    <th scope="col" class="text-end" style="width: 250px;">Giá</th>
+                                    <th scope="col" class="text-end" style="width: 250px;">Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="item in usedServices">
+                                    <th scope="row">
+                                        {{item.serviceRoom.code}}
+                                    </th>
+                                    <td>{{item.serviceRoom.name}}</td>
+                                    <td>{{item.startedTime | date:'dd/MM'}}</td>
+                                    <td>{{item.endedTime | date:'dd/MM'}}</td>
+                                    <td class="text-end">{{item.servicePrice | currency: '' : 0}}₫</td>
+                                    <td class="text-end">{{getTotalService(item) | currency: '' : 0}}₫</td>
+                                </tr>
+                                <tr ng-show="usedServices.length == 0">
+                                    <td colspan="6" class="text-center">Dịch vụ trống</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5" class="border-0 text-end">Tiền dịch vụ</td>
+                                    <td class="border-0 text-end">{{totalUsedService() | currency: '' : 0}}₫</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5" class="border-0 text-end">Tiền phòng</td>
+                                    <td class="border-0 text-end">{{totalRoom() | currency: '' : 0}}₫</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5" class="border-0 text-end">Tiền trả trước</td>
+                                    <td class="border-0 text-end">{{invoiceDetail.deposit  | currency: '' : 0}}₫</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5" class="border-0 text-end">Phụ phí người lớn {{peopleInRoom.numAdults - invoiceDetail.room.roomType.numAdults > 0 ? '(' + (peopleInRoom.numAdults - invoiceDetail.room.roomType.numAdults) + ' người)' : ''}}</td>
+                                    <td class="border-0 text-end">{{peopleInRoom.adultSurcharge  | currency: '' : 0}}₫</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5" class="border-0 text-end">Phụ phí trẻ em {{peopleInRoom.numChilds - invoiceDetail.room.roomType.numChilds > 0 ? '(' + (peopleInRoom.numChilds - invoiceDetail.room.roomType.numChilds) + ' người)' : ''}}</td>
+                                    <td class="border-0 text-end">{{peopleInRoom.childSurcharge  | currency: '' : 0}}₫</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5" class="border-0 text-end">Phụ phí khác</td>
+                                    <td class="border-0 text-end">{{invoiceDetail.ortherSurcharge  | currency: '' : 0}}₫</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5" class="border-0 text-end">Nhận phòng sớm</td>
+                                    <td class="border-0 text-end">{{invoiceDetail.earlyCheckinFee | currency: '' : 0}}₫
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5" class="border-0 text-end">Trả phòng muộn</td>
+                                    <td class="border-0 text-end">{{invoiceDetail.lateCheckoutFee | currency: '' : 0}}₫
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5" class="border-0 text-end">
+                                        <strong>Thành tiền</strong></td>
+                                    <td class="border-0 text-end"><h4 class="m-0">{{total() | currency: '' : 0}}₫</h4></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-body border-top">
+                    <a ng-href="/#!/hotel-room" class="btn btn-secondary waves-effect waves-light"><i
+                        class="mdi mdi-arrow-left"></i> Quay lại</a>
+                    <div class="float-end">
+                        <button ng-click="modalSurchargeRoom('show')" class="btn btn-primary waves-effect waves-light" title="Phụ phí">
+                            <i class="bx bx-money"></i>
+                        </button>
+                        <button ng-click="modalHostedAt('show')" class="btn btn-info waves-effect waves-light" title="Người ở">
+                            <i class="mdi mdi-account-group-outline"></i>
+                        </button>
+                        <button ng-click="handlerCheckout()" class="btn btn-success waves-effect waves-light">
+                            <i class="mdi mdi-logout-variant"></i> Trả phòng
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-surcharge-room" class="modal fade" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Phụ phí phòng {{invoiceDetail.room.code}}</h5>
+                    <button ng-click="modalSurchargeRoom('hide')" type="button" class="btn-close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="deposit" class="form-label">Trả phòng muộn</label>
+                                <input ng-model="invoiceDetail.lateCheckoutFee" type="number" min="0"
+                                    class="form-control" id="deposit">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button ng-click="modalSurchargeRoom('hide')" type="button"
+                        class="btn btn-secondary waves-effect">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="modal-hosted-at" class="modal fade" data-bs-backdrop="static" tabindex="-1" aria-hidden="true"
+        data-bs-keyboard="false">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Người ở phòng {{invoiceDetail.room.code}}</h5>
+                    <button ng-click="modalHostedAt('hide')" type="button" class="btn-close"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table mb-2 table-bordered">
+                        <tbody>
+                            <tr>
+                                <th scope="row">Phụ phí người lớn</th>
+                                <td>
+                                    {{invoiceDetail.room.roomType.adultSurcharge | currency: '' : 0}}₫/người, thêm tối đa {{invoiceDetail.room.roomType.maxAdultsAdd}}
+                            </tr>
+                            <tr>
+                                <th scope="row">Phụ phí trẻ em</th>
+                                <td>
+                                    {{invoiceDetail.room.roomType.childSurcharge | currency: '' : 0}}₫/người, thêm tối đa {{invoiceDetail.room.roomType.maxChildsAdd}}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <input class="form-control" type="search" placeholder="Tìm kiếm"
+                        id="search-datatable-hosted-at">
+                    <div class="table-responsive">
+                        <table id="datatable-hosted-at" class="table align-middle table-nowrap table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Họ tên</th>
+                                    <th scope="col">SĐT</th>
+                                    <th scope="col">Giới tính</th>
+                                    <th scope="col">Ngày sinh</th>
+                                    <th scope="col">CCCD/CMT</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="item in hostedAts">
+                                    <th scope="row">
+                                        {{item.customer.fullName}}
+                                    </th>
+                                    <td>{{item.customer.phoneNumber}}</td>
+                                    <td>{{item.customer.gender ? "Nam" : "Nữ"}}</td>
+                                    <td>{{item.customer.dateOfBirth | date:'dd/MM/yyyy'}}</td>
+                                    <td>{{item.customer.peopleId}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button ng-click="modalHostedAt('hide')" class="btn btn-secondary">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div ng-show="isLoading" class="loader"> 
+        <div class="loader-inner">
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+        </div>
+    </div>
+</app-layout>

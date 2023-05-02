@@ -1,0 +1,45 @@
+<app-layout name="">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="mb-4">Update Room Form</h4>
+                    <form>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="formrow-name-input" class="form-label">Name</label>
+                                    <input ng-model="form.name" type="text" class="form-control" id="formrow-Name-input"
+                                        placeholder="Enter Name"> 
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="formrow-status-input">Status</label>
+                                    <select ng-model="form.status" id="formrow-status-input" class="form-select">
+                                        <option ng-value="1">Đang hoạt động</option>
+                                        <option ng-value="0">Ngừng hoạt động</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label for="formrow-description-input">Description</label>
+                                    <textarea ng-model="form.description" id="formrow-description-input"
+                                        class="form-control" rows="3" placeholder="Enter Description"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <button ng-click="update()" href="/#!/payment"
+                                class="btn btn-secondary w-md">Cập nhật</button>
+                            <button ng-click="reset()"
+                                class="btn btn-secondary w-md">Làm mới</button> <a href="/#!/payment" class="btn btn-secondary w-md">Đóng</a>
+                            <!-- <button class="btn btn-primary waves-effect waves-light btn-rounded mb-2"> Cancel</button> -->
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</app-layout>

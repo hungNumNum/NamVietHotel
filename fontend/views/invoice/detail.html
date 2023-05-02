@@ -1,0 +1,564 @@
+<app-layout>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <!-- <h5 class="fw-semibold">Hoá đơn #{{invoice.code}}</h5> -->
+                    <table class="table mb-3 table-bordered">
+                        <tbody>
+                            <tr>
+                                <th colspan="2" class="fw-semibold text-center bg-light">
+                                    <h4>Hoá đơn #{{invoice.code}}</h4>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th scope="row" style="width: 300px;">Họ và tên</th>
+                                <td>{{invoice.booking.customer.fullName}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">CCCD/CMND</th>
+                                <td>{{invoice.booking.customer.peopleId}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Email</th>
+                                <td>{{invoice.booking.customer.email}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">SĐT</th>
+                                <td>{{invoice.booking.customer.phoneNumber}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Địa chỉ</th>
+                                <td>{{invoice.booking.customer.address}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-body" ng-repeat="invoiceDetail in invoiceDetails">
+                    <table class="table mb-3 table-bordered">
+                        <tbody>
+                            <tr>
+                                <th colspan="2" class="fw-semibold text-center bg-light bm-0">
+                                    <h4>PHÒNG {{invoiceDetail.room.code}}</h4>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th scope="row" style="width: 300px;">Loại phòng</th>
+                                <td>{{invoiceDetail.room.roomType.name}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Giá phòng</th>
+                                <td>{{invoiceDetail.roomPrice | currency: '' : 0}}₫</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Ngày thuê</th>
+                                <td>{{invoiceDetail.checkinExpected | date:'dd/MM/yyyy'}} -
+                                    {{invoiceDetail.checkoutExpected | date:'dd/MM/yyyy'}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Ngày đến/đi</th>
+                                <td>{{invoiceDetail.checkin | date:'HH:mm dd/MM/yyyy'}} - {{invoiceDetail.checkout |
+                                    date:'HH:mm dd/MM/yyyy'}}</td>
+                            </tr>
+                            <tr class="d-print-none">
+                                <th scope="row">Trạng thái</th>
+                                <td>{{invoiceDetail.status == 0 ? 'Huỷ' : (invoiceDetail.status == 1 ? 'Đang sử dụng' :
+                                    (invoiceDetail.status == 2 ? 'Hoàn thành' : ''))}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Ghi chú</th>
+                                <td>{{invoiceDetail.note}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="table-responsive">
+                        <table class="table align-middle table-nowrap">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Tên dich vụ</th>
+                                    <th scope="col">Loại</th>
+                                    <th scope="col" class="text-end">Từ ngày</th>
+                                    <th scope="col" class="text-end">Đến ngày</th>
+                                    <th scope="col" class="text-end" style="width: 250px;">Giá</th>
+                                    <th scope="col" class="text-end" style="width: 250px;">Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody ng-init="loadUsedServices(invoiceDetail)">
+                                <tr ng-repeat="usedService in invoiceDetail.usedServices">
+                                    <th scope="row">
+                                        {{usedService.serviceRoom.name}}
+                                    </th>
+                                    <td>{{usedService.serviceRoom.serviceType.name}}</td>
+                                    <td class="text-end">{{usedService.startedTime | date:'dd/MM'}}</td>
+                                    <td class="text-end">{{usedService.endedTime | date:'dd/MM'}}</td>
+                                    <td class="text-end">{{usedService.serviceRoom.price | currency: '' : 0}}₫</td>
+                                    <td class="text-end">{{getTotalService(usedService) |
+                                        currency: '' : 0}}₫</td>
+                                </tr>
+                                <tr ng-show="invoiceDetail.usedServices.length == 0">
+                                    <td colspan="6" class="text-center">Dịch vụ trống</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5" class="border-0 text-end">Tiền dịch vụ</td>
+                                    <td class="border-0 text-end">{{(invoiceDetail.status == 1 ?
+                                        getTotalUsedService(invoiceDetail.usedServices) : invoiceDetail.totalServiceFee)
+                                        |
+                                        currency: '' : 0}}₫</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5" class="border-0 text-end">Tiền phòng</td>
+                                    <td class="border-0 text-end">{{(invoiceDetail.status == 1 ?
+                                        getTotalRoom(invoiceDetail) : invoiceDetail.totalRoomFee) | currency: '' : 0}}₫
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5" class="border-0 text-end">Tiền trả trước</td>
+                                    <td class="border-0 text-end">{{invoiceDetail.deposit | currency: '' : 0}}₫
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5" class="border-0 text-end">Phụ phí người lớn {{invoiceDetail.peopleInRoom.numAdults - invoiceDetail.room.roomType.numAdults > 0 ? '(' + (invoiceDetail.peopleInRoom.numAdults - invoiceDetail.room.roomType.numAdults) + ' người)' : ''}}</td>
+                                    <td class="border-0 text-end">{{invoiceDetail.peopleInRoom.adultSurcharge  | currency: '' : 0}}₫</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5" class="border-0 text-end">Phụ phí trẻ em {{invoiceDetail.peopleInRoom.numChilds - invoiceDetail.room.roomType.numChilds > 0 ? '(' + (invoiceDetail.peopleInRoom.numChilds - invoiceDetail.room.roomType.numChilds) + ' người)' : ''}}</td>
+                                    <td class="border-0 text-end">{{invoiceDetail.peopleInRoom.childSurcharge  | currency: '' : 0}}₫</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5" class="border-0 text-end">Phụ phí khác</td>
+                                    <td class="border-0 text-end">{{invoiceDetail.ortherSurcharge  | currency: '' : 0}}₫</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5" class="border-0 text-end">Nhận phòng sớm</td>
+                                    <td class="border-0 text-end">{{invoiceDetail.earlyCheckinFee | currency: '' : 0}}₫
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5" class="border-0 text-end">Trả phòng muộn</td>
+                                    <td class="border-0 text-end">{{invoiceDetail.lateCheckoutFee | currency: '' : 0}}₫
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th colspan="5" class="border-0 text-end">
+                                        Tổng tiền phòng
+                                    </th>
+                                    <th class="border-0 text-end">
+                                        {{(invoiceDetail.status == 1 ? getTotalInvoiceDetail(invoiceDetail,
+                                        invoiceDetail.usedServices) : invoiceDetail.total) | currency: '' : 0}}₫
+                                    </th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="float-end d-print-none">
+                        <button ng-show="invoice.status != 3 && invoice.status != 4"
+                            ng-click="modalUpdateRoom('show', invoiceDetail)"
+                            class="btn btn-primary waves-effect waves-light" title="Chỉnh sửa">
+                            <i class="mdi mdi-pencil-outline"></i>
+                        </button>
+                        <button ng-click="modalHostedAt('show', invoiceDetail)"
+                            class="btn btn-info waves-effect waves-light" title="Người ở">
+                            <i class="mdi mdi-account-group-outline"></i>
+                        </button>
+                        <button ng-click="modalHistoryRoom('show', invoiceDetail)"
+                            class="btn btn-secondary waves-effect waves-light" title="Lịch sử">
+                            <i class="mdi mdi-history"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <tbody>
+                                <tr>
+                                    <th colspan="2" class="fw-semibold text-center bg-light">
+                                        <h4>THANH TOÁN</h4>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th>Tổng tiền trả trước</th>
+                                    <td class="border-0 text-end">
+                                        {{getTotalDeposit() | currency: '' : 0}}₫
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Tổng tiền hoá đơn</th>
+                                    <td class="border-0 text-end">
+                                        {{(invoice.status == 2 || invoice.status == 3 || invoice.status == 4) ? invoice.total : getTotalInvoice() | currency: '' : 0}}₫
+                                    </td>
+                                </tr>
+                                <tr ng-show="invoice.status == 3 || invoice.status == 4">
+                                    <th>Giảm giá</th>
+                                    <td class="border-0 text-end">{{invoice.discountMoney | currency: '' : 0}}₫</td>
+                                </tr>
+                                <tr ng-show="invoice.status == 3 || invoice.status == 4">
+                                    <th>Phương thức thanh toán</th>
+                                    <td class="border-0 text-end">
+                                        {{invoice.paymentMethod.name}}
+                                    </td>
+                                </tr>
+                                <tr ng-show="invoice.status == 4">
+                                    <th>Ngày thanh toán</th>
+                                    <td class="border-0 text-end">
+                                        {{invoice.paidDate | date:'HH:mm dd/MM/yyyy'}}
+                                    </td>
+                                </tr>
+                                <tr class="d-print-none">
+                                    <th>Trạng thái</th>
+                                    <td class="border-0 text-end">
+                                        {{invoice.status == 1 ? 'Đang chờ' : (invoice.status == 2 ? 'Chưa thanh toán' :
+                                        (invoice.status == 3 ? 'Chờ thanh toán' : (invoice.status == 4 ? 'Hoàn thành' :
+                                        'Đã huỷ')))}}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Ghi chú</th>
+                                    <td class="border-0 text-end">
+                                        {{invoice.note}}
+                                    </td>
+                                </tr>
+                                <tr ng-show="invoice.status == 3 || invoice.status == 4">
+                                    <th>Tổng tiền thanh toán</th>
+                                    <td class="border-0 text-end">
+                                        <h4 class="m-0">{{invoice.totalPayment | currency: '' : 0}}₫</h4>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-body border-top d-print-none">
+                    <a ng-href="/#!/invoices" class="btn btn-secondary waves-effect waves-light"><i
+                        class="mdi mdi-arrow-left"></i> Quay lại</a>
+                    <div class="float-end">
+                        <button ng-show="(invoice.status == 1 || invoice.status == 2) && isSplitInvoice()" ng-click="modalSplit('show')"
+                            class="btn btn-warning waves-effect waves-light"><i
+                                class="mdi mdi-arrow-split-vertical"></i> Tách hoá đơn</button>
+                        <button ng-show="invoice.status == 2" ng-click="modalPayment('show')"
+                            class="btn btn-success waves-effect waves-light"><i class="bx bx-money"></i> Thanh
+                            toán</button>
+                        <button ng-show="invoice.status == 3 && invoice.paymentMethod.code == 'VNPAY'"
+                            ng-click="handlerVNPay()" class="btn btn-success waves-effect waves-light"
+                            title="Thanh toán VNPay"><i class="bx bx-money"></i> VNPay</button>
+                        <button ng-show="invoice.status == 3 && invoice.paymentMethod.code != 'VNPAY'"
+                            ng-click="confirmPayment()" class="btn btn-success waves-effect waves-light"><i
+                            class="mdi mdi-check-bold"></i> Xác
+                            nhận</button>
+                        <a href="javascript:window.print()" class="btn btn-primary waves-effect waves-light"
+                            title="In hóa đơn"><i class="fa fa-print"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-update-room" class="modal fade" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Phụ phí phòng {{invoiceDetail.room.code}}</h5>
+                    <button ng-click="modalUpdateRoom('hide')" type="button" class="btn-close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="deposit" class="form-label">Phụ phí khác</label>
+                                <input ng-model="invoiceDetailUpdate.ortherSurcharge" type="number" min="0"
+                                    class="form-control" id="deposit">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="deposit" class="form-label">Nhận phòng sớm</label>
+                                <input ng-model="invoiceDetailUpdate.earlyCheckinFee" type="number" min="0"
+                                    class="form-control" id="deposit">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="deposit" class="form-label">Trả phòng muộn</label>
+                                <input ng-model="invoiceDetailUpdate.lateCheckoutFee" type="number" min="0"
+                                    class="form-control" id="deposit">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="note" class="form-label">Ghi chú</label>
+                                <textarea ng-model="invoiceDetailUpdate.note" class="form-control" id="note"
+                                    rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button ng-click="handlerUpdateRoom()" type="button" class="btn btn-primary waves-effect">Cập
+                        nhật</button>
+                    <button ng-click="modalUpdateRoom('hide')" type="button"
+                        class="btn btn-secondary waves-effect">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-hosted-at" class="modal fade" data-bs-backdrop="static" tabindex="-1" aria-hidden="true"
+        data-bs-keyboard="false">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Người ở phòng {{invoiceDetail.room.code}}</h5>
+                    <button ng-click="modalHostedAt('hide')" type="button" class="btn-close"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table mb-2 table-bordered">
+                        <tbody>
+                            <tr>
+                                <th scope="row">Phụ phí người lớn</th>
+                                <td>
+                                    {{invoiceDetail.room.roomType.adultSurcharge | currency: '' : 0}}₫/người, thêm tối đa {{invoiceDetail.room.roomType.maxAdultsAdd}}
+                            </tr>
+                            <tr>
+                                <th scope="row">Phụ phí trẻ em</th>
+                                <td>
+                                    {{invoiceDetail.room.roomType.childSurcharge | currency: '' : 0}}₫/người, thêm tối đa {{invoiceDetail.room.roomType.maxChildsAdd}}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <input class="form-control" type="search" placeholder="Tìm kiếm" id="search-datatable-hosted-at">
+                    <div class="table-responsive">
+                        <table id="datatable-hosted-at" class="table align-middle table-nowrap table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Họ tên</th>
+                                    <th scope="col">SĐT</th>
+                                    <th scope="col">Giới tính</th>
+                                    <th scope="col">Ngày sinh</th>
+                                    <th scope="col">CCCD/CMT</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="item in hostedAts">
+                                    <th scope="row">
+                                        {{item.customer.fullName}}
+                                    </th>
+                                    <td>{{item.customer.phoneNumber}}</td>
+                                    <td>{{item.customer.gender ? "Nam" : "Nữ"}}</td>
+                                    <td>{{item.customer.dateOfBirth | date:'dd/MM/yyyy'}}</td>
+                                    <td>{{item.customer.peopleId}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button ng-click="modalHostedAt('hide')" class="btn btn-secondary">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-history-room" class="modal fade" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Lịch sử phòng {{invoiceDetail.room.code}}</h5>
+                    <button ng-click="modalHistoryRoom('hide')" type="button" class="btn-close"></button>
+                </div>
+                <div class="modal-body">
+                    <input class="form-control" type="search" placeholder="Tìm kiếm"
+                        id="search-datatable-invoice-detail-history">
+                    <table id="datatable-invoice-detail-history" class="table table-bordered dt-responsive nowrap"
+                        style="width:100%">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Ngày cập nhật</th>
+                                <th scope="col">Ngày trả</th>
+                                <th scope="col">Phụ phí khác</th>
+                                <th scope="col">Nhận phòng sớm</th>
+                                <th scope="col">Trả phòng muộn</th>
+                                <th scope="col">Người cập nhật</th>
+                                <th scope="col">Ghi chú</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in invoiceDetailHistories | orderBy:'-updateDate'">
+                                <td>
+                                    <b>{{$index + 1}}</b>
+                                </td>
+                                <td>{{item.updateDate | date:'hh:mm dd/MM/yyyy'}}</td>
+                                <td>{{item.checkoutExpected | date:'dd/MM/yyyy'}}</td>
+                                <td>{{item.ortherSurcharge | currency: '' : 0}}₫</td>
+                                <td>{{item.earlyCheckinFee | currency: '' : 0}}₫</td>
+                                <td>{{item.lateCheckoutFee | currency: '' : 0}}₫</td>
+                                <td>{{item.createdBy}}</td>
+                                <td>{{item.note}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button ng-click="modalHistoryRoom('hide')" type="button"
+                        class="btn btn-secondary waves-effect">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-split" class="modal fade" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Tách hoá đơn {{invoice.code}}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input class="form-control" type="search" placeholder="Tìm kiếm" id="search-datatable-hosted-at">
+                    <div class="table-responsive">
+                        <table id="datatable-hosted-at" class="table align-middle table-nowrap table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Phòng</th>
+                                    <th scope="col">Giá phòng</th>
+                                    <th scope="col">Tiền dịch vụ</th>
+                                    <th scope="col">Tiền phòng</th>
+                                    <th scope="col">Trả trước</th>
+                                    <th scope="col">Nhận phòng sớm</th>
+                                    <th scope="col">Trả phòng muộn</th>
+                                    <th scope="col">Tổng tiền phòng</th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="item in invoiceDetails  | filter: filterFn"
+                                    ng-click="toggleSelection(item.room.code)">
+                                    <td scope="row">
+                                        <b>{{item.room.code}}</b>
+                                    </td>
+                                    <td>{{item.roomPrice | currency: '' : 0}}₫</td>
+                                    <td>{{item.totalServiceFee | currency: '' : 0}}₫</td>
+                                    <td>{{item.totalRoomFee | currency: '' : 0}}₫</td>
+                                    <td>{{item.deposit | currency: '' : 0}}₫</td>
+                                    <td>{{item.earlyCheckinFee | currency: '' : 0}}₫</td>
+                                    <td>{{item.lateCheckoutFee | currency: '' : 0}}₫</td>
+                                    <td>{{item.total | currency: '' : 0}}₫</td>
+                                    <td>
+                                        <input ng-value="item.room.code"
+                                            ng-checked="slpitInvoice.selection.indexOf(item.room.code) > -1"
+                                            type="checkbox" name="selectedRooms[]">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button ng-click="handlerSplitInvoice()" class="btn btn-success"><i class="bx bx-money"></i>
+                        Tách</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-payment" class="modal fade" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Thanh toán hoá đơn {{invoice.code}}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="promotion" class="form-label">Khuyến mãi</label>
+                        <select ng-options="promotion as promotion.description for promotion in promotions"
+                            ng-model="payment.promotion" class="form-select" id="promotion">
+                        </select>
+                    </div>
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <th scope="row" style="width: 250px;">Tổng tiền trả trước</th>
+                                <td>{{getTotalDeposit() | currency: '' : 0}}₫</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Tổng tiền hoá đơn</th>
+                                <td>{{invoice.total | currency: '' : 0}}₫</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Giảm giá</th>
+                                <td>{{getDiscount() | currency: '' : 0}}₫</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Tổng tiền thanh toán</th>
+                                <td>{{getTotalPayment() | currency: '' : 0}}₫</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Tiền trả trước còn lại</th>
+                                <td>{{getRemainingDeposit() | currency: '' : 0}}₫</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="row">
+                        <div class="col-4">
+                            <div ng-show="getTotalPayment() > 0" class="mb-3">
+                                <label for="paymentMethod" class="form-label">Phương thức thanh toán</label>
+                                <select
+                                    ng-options="paymentMethod as paymentMethod.name for paymentMethod in paymentMethods"
+                                    ng-model="payment.paymentMethod" class="form-select" id="paymentMethod">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div ng-show="payment.paymentMethod.code == 'CASH'" class="mb-3">
+                                <label for="paymentMethod" class="form-label">Tiền khách đưa</label>
+                                <input ng-model="payment.money" class="form-control" type="number" id="">
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div ng-show="payment.paymentMethod.code == 'CASH'" class="mb-3">
+                                <label for="paymentMethod" class="form-label">Tiền trả lại</label>
+                                <input ng-value="(payment.money - getTotalPayment() | currency: '' : 0) + '₫'"
+                                    class="form-control" type="text" id="" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="note" class="form-label">Ghi chú</label>
+                        <textarea ng-model="invoice.note" class="form-control" id="note" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button ng-click="handlerPayment()" class="btn btn-success"><i class="bx bx-money"></i> Thanh
+                        toán</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div ng-show="isLoading" class="loader">
+        <div class="loader-inner">
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+        </div>
+    </div>
+</app-layout>

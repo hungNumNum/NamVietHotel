@@ -1,0 +1,78 @@
+<app-layout name="">
+    <link href="assets/libs/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <h5 class="card-header bg-transparent border-bottom text-uppercase">
+                    CẬP NHẬT TÀI KHOẢN
+                </h5>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <a href="/#!/accounts" class="btn btn-primary w-md waves-effect waves-light">
+                            <i class="mdi mdi-format-list-bulleted"></i> Tài khoản
+                        </a>
+                    </div>
+                    <form>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="username" class="form-label">Tên đăng nhập</label>
+                                    <input ng-model="account.username" type="text" class="form-control" id="username" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="fullName" class="form-label">Họ và tên</label>
+                                    <input ng-model="account.fullName" type="text" class="form-control" id="fullName">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Mật khẩu</label>
+                                    <div class="input-group">
+                                        <input ng-model="account.password" type="password" class="form-control" id="password">
+                                        <button ng-click="handlerShowPassword()" class="btn btn-light" type="button">
+                                            <i ng-show="!isShowPassword" class="mdi mdi-eye-outline"></i>
+                                            <i ng-show="isShowPassword" class="mdi mdi-eye-off-outline"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="confirmPassword" class="form-label">Xác nhận mật khẩu</label>
+                                    <div class="input-group">
+                                        <input ng-model="account.confirmPassword" type="password" class="form-control" id="confirmPassword">
+                                        <button ng-click="handlerShowConfirmPassword()" class="btn btn-light" type="button">
+                                            <i ng-show="!isShowConfirmPassword" class="mdi mdi-eye-outline"></i>
+                                            <i ng-show="isShowConfirmPassword" class="mdi mdi-eye-off-outline"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="phoneNumber" class="form-label">SĐT</label>
+                                    <input ng-model="account.phoneNumber" type="text" class="form-control" id="phoneNumber">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input ng-model="account.email" type="text" class="form-control" id="email">
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <button ng-click="update()" class="btn btn-warning w-md">Cập nhật</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</app-layout>

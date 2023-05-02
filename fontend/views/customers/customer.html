@@ -1,0 +1,360 @@
+<app-layout name="">
+
+    <div ng-show="loading" class="loader">
+        <div class="loader-inner">
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <h5 class="card-header bg-transparent border-bottom text-uppercase">
+                        KHÁCH HÀNG
+                    </h5>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-sm-8">
+
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="text-sm-end">
+                                    <a class="btn btn-primary w-md waves-effect waves-light"
+                                        ng-click="viewCustomerType()" role="button">
+                                        <i class="mdi mdi-crown-outline"></i> Hạng</a>
+                                </div>
+                            </div>
+                        </div>
+                        <input class="form-control" type="search" placeholder="Tìm kiếm" id="search-datatable-customer">
+                        <table id="customer-table" class="table table-bordered dt-responsive nowrap w-100">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Họ tên</th>
+                                    <th>Số điện thoại</th>
+                                    <th>Email</th>
+                                    <th>Hạng</th>
+                                    <th>#</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="customer in customers">
+                                    <th scope="row">{{$index + 1}}</th>
+                                    <td>{{customer.fullName}}</td>
+                                    <td>{{customer.phoneNumber}}</td>
+                                    <td>{{customer.email}}</td>
+                                    <td>
+                                        <span class="badge badge-pill font-size-15"
+                                            ng-class="{'badge-soft-success': customer.customerType.id == 1, 'badge-soft-warning': customer.customerType.id != 1}">
+                                            {{customer.customerType.name}}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-outline-secondary btn-sm edit" title="Xem chi tiết"
+                                            ng-click="viewCustomer(customer)">
+                                            <i class="fas fa-eye font-size-16"></i>
+                                        </a>
+                                        <a class="btn btn-outline-secondary btn-sm edit" title="Cập nhật"
+                                            ng-click="editCustomer(customer)">
+                                            <i class="bx bxs-edit-alt font-size-16"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- modal view customer -->
+
+        <div class="modal fade" id="customer-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="customer-modal-label">{{ selectedCustomer.fullName }}
+                            <span class="badge badge-pill"
+                                ng-class="{'bg-success': selectedCustomer.customerType.id == 1, 'bg-warning': selectedCustomer.customerType.id != 1}">
+                                {{selectedCustomer.customerType.name}}
+                            </span>
+                            <span> - {{numInvoicesOfCus}} điểm tích luỹ</span>
+                            <span ng-if="historyBookings.length > 0"> - {{historyBookings.length}} bookings</span>
+                        </h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                            ng-click="closeModal()"></button>
+                    </div>
+                    <div class="modal-body">
+
+                        <!-- Thông tin khách hàng -->
+
+                        <div class="row" ng-hide="showHistoryBooking">
+                            <div class="col-md-6">
+                                <img ng-src="{{frontIdCardUrl}}" alt="Mặt trước CCCD/CMND"
+                                    style="height: 230px; width: 330px">
+                            </div>
+                            <div class="col-md-6">
+                                <img ng-src="{{backIdCardUrl}}" alt="Mặt sau CCCD/CMND"
+                                    style="height: 230px; width: 330px">
+                            </div>
+                            <p></p>
+                            <div class="col-md-12">
+                                <table class="table table-hover table-reponsive">
+                                    <tr>
+                                        <td><strong>Số CCCD/CMND:</strong></td>
+                                        <td>{{ selectedCustomer.peopleId }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Giới tính:</strong></td>
+                                        <td>
+                                            <span ng-if="selectedCustomer.gender">Nam</span>
+                                            <span ng-if="!selectedCustomer.gender">Nữ</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Ngày sinh:</strong></td>
+                                        <td>{{ selectedCustomer.dateOfBirth | date:'dd-MM-yyyy' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Số điện thoại:</strong></td>
+                                        <td>{{ selectedCustomer.phoneNumber }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Email:</strong></td>
+                                        <td>{{ selectedCustomer.email }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Địa chỉ:</strong></td>
+                                        <td>{{ selectedCustomer.address }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Thường trú:</strong></td>
+                                        <td>{{ selectedCustomer.placeOfBirth }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="text-sm-end">
+                                <a class="btn btn-secondary" role="button"
+                                    ng-click="showHistoryBookingOfCus(selectedCustomer.id)">
+                                    Lịch sử đặt</a>
+                            </div>
+                        </div>
+
+                        <!-- Lịch sử đặt -->
+
+                        <div class="row" ng-show="showHistoryBooking">
+
+                            <table class="table table-hover table-reponsive" id="history-booking-table">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Mã</th>
+                                    <th>Ngày đặt</th>
+                                </tr>
+                                <tr ng-repeat="b in historyBookings">
+                                    <td>{{$index + 1}}</td>
+                                    <td>{{b.code}}</td>
+                                    <td>{{b.createdDate | date:'HH:mm dd-MM-yyyy'}}</td>
+                                </tr>
+                            </table>
+                            <div class="text-sm-end">
+                                <a class="btn btn-secondary" ng-click="hideHistoryBookingOfCus()" role="button">
+                                    Quay lại</a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- modal edit customer -->
+
+        <div class="modal fade" id="edit-customer-modal" data-bs-backdrop="static" data-bs-keyboard="false"
+            tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="customer-modal-label">{{ customer.fullName }}
+                            <span class="badge badge-pill font-size-15"
+                                ng-class="{'bg-success': selectedCustomer.customerType.id == 1, 'bg-warning': selectedCustomer.customerType.id != 1}">
+                                {{customer.customerType.name}}
+                            </span>
+                            <span> - {{numInvoicesOfCus}} điểm tích luỹ</span>
+                        </h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card mb-3">
+                                    <div class="card-header">
+                                        Mặt trước CCCD/CMND
+                                    </div>
+                                    <div class="card-body">
+                                        <img ng-src="{{ frontIdCardUrl }}" style="width: 100%; height: 100%;">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card mb-3">
+                                    <div class="card-header">
+                                        Mặt sau CCCD/CMND
+                                    </div>
+                                    <div class="card-body">
+                                        <img ng-src="{{ backIdCardUrl }}" style="width: 100%; height: 100%;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <form ng-submit="updateCustomer()">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="fullName" class="form-label">Họ tên</label>
+                                        <input type="text" class="form-control" id="fullName" placeholder="Họ tên"
+                                            ng-model="customer.fullName" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="gender" class="form-label">Giới tính</label>
+                                        <div class="row">
+                                            <div class="col-md-5">
+                                                <input class="form-check-input" type="radio" name="gender" id="male"
+                                                    ng-model="customer.gender" ng-value="true">
+                                                <label class="form-check-label" for="male">
+                                                    Nam
+                                                </label>
+                                            </div>
+                                            <div class="col-md-5">
+                                                <input class="form-check-input" type="radio" name="gender" id="female"
+                                                    ng-model="customer.gender" ng-value="false">
+                                                <label class="form-check-label" for="female">
+                                                    Nữ
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="peopleId" class="form-label">Số CCCD/CMND</label>
+                                        <input type="text" class="form-control" id="peopleId" placeholder="Số CCCD/CMND"
+                                            ng-model="customer.peopleId" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="dateOfBirth" class="form-label">Ngày sinh</label>
+                                        <input type="date" class="form-control" id="dateOfBirth" placeholder="Ngày sinh"
+                                            ng-model="customer.dateOfBirth" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="phoneNumber" class="form-label">Số điện thoại</label>
+                                        <input type="text" class="form-control" id="phoneNumber"
+                                            placeholder="Số điện thoại" ng-model="customer.phoneNumber" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Email</label>
+                                        <input type="text" class="form-control" id="email" placeholder="Email"
+                                            ng-model="customer.email" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="address" class="form-label">Dịa chỉ</label>
+                                        <input type="text" class="form-control" id="address" placeholder="Địa chỉ"
+                                            ng-model="customer.address" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="placeOfBirth" class="form-label">Thường trú</label>
+                                        <input type="text" class="form-control" id="placeOfBirth"
+                                            placeholder="Thường trú" ng-model="customer.placeOfBirth" required>
+                                    </div>
+                                </div>
+                                <div>
+                                    <button class="btn btn-warning" type="submit">Cập nhật</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- modal customer type -->
+
+        <div class="modal fade" id="customer-type-modal" data-bs-backdrop="static" data-bs-keyboard="false"
+            tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="customer-modal-label">
+                            Hạng khách hàng
+                        </h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="card">
+                            <div class="card-body">
+
+                                <table id="customer-type-table" class="table table-hover table-reponsive">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Tên hạng</th>
+                                            <th>Mô tả</th>
+                                            <th>Số lượng khách</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="type in customerTypes">
+                                            <th scope="row">{{$index + 1}}</th>
+                                            <td>
+                                                <span class="badge badge-pill font-size-15"
+                                                    ng-class="{'badge-soft-success': type.id == 1, 'badge-soft-warning': type.id != 1}">
+                                                    {{type.name}}
+                                                </span>
+                                            </td>
+                                            <td>{{type.description}}</td>
+                                            <td>{{type.numOfCustomers}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</app-layout>

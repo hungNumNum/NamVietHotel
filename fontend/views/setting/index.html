@@ -1,0 +1,88 @@
+<app-layout>
+    <div class="row">
+        <div class="col-6">
+            <div class="card">
+                <h5 class="card-header bg-transparent border-bottom text-uppercase">
+                    CẤU HÌNH GIỜ
+                </h5>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="formrow-checkin-input" class="form-label">Giờ nhận phòng</label>
+                        <input ng-model="setting.checkinTime" class="form-control" type="time">
+                    </div>
+                    <div class="mb-3">
+                        <label for="formrow-firstname-input" class="form-label">Giờ trả phòng</label>
+                        <input ng-model="setting.checkoutTime" class="form-control" type="time">
+                    </div>
+                    <button ng-click="handlerUpdateSetting()" class="btn btn-primary">Cập nhật</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="card">
+                <h5 class="card-header bg-transparent border-bottom text-uppercase">
+                    PHƯƠNG THỨC THANH TOÁN
+                </h5>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <a href="/#!/payment/create" class="btn btn-primary w-md waves-effect waves-light me-1">
+                            <i class="mdi mdi-plus"></i> Thêm thương thức
+                        </a>
+                    </div>
+                    <input class="form-control mb-3" type="search" placeholder="Tìm kiếm"
+                        id="search-datatable-payment-method">
+                    <table id="datatable-payment-method" class="table table-bordered dt-responsive nowrap w-100">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Tên phương thức</th>
+                                <th>Trạng thái</th>
+                                <th>Mô tả</th>
+                                <th style="width: 100px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in paymentMethods">
+                                <td>
+                                    <b>{{$index + 1}}</b>
+                                </td>
+                                <td>{{item.name}}</td>
+                                <td>
+                                    <span class="badge badge-pill" ng-class="item.status ? 'bg-success ' : 'badge-soft-danger'">
+                                        {{item.status ? 'Đang hoạt động' : 'Ngừng hoạt động'}}
+                                    </span>
+                                </td>
+                                <td>{{item.description}}</td>
+                                <td>
+                                    <a href="/#!/payment/update/{{item.id}}" class="btn btn-outline-secondary btn-sm edit" title="Chỉnh sửa">
+                                        <i class="fas fa-pencil-alt"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div ng-show="isLoading" class="loader"> 
+        <div class="loader-inner">
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+        </div>
+    </div>
+</app-layout>

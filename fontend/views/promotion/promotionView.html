@@ -1,0 +1,302 @@
+<app-layout name="">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-6">
+                <form>
+
+                    <div class="row">
+
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="formrow-username-input" class="form-label">Tên khuyến mại</label>
+                                <input ng-model="form.name" type="text" class="form-control" id="formrow-username-input"
+                                    placeholder="Enter Your  Promotion Name">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="formrow-password-input" class="form-label">Phần trăm %</label>
+                                <input type="number" class="form-control" ng-model="form.percent"
+                                    id="formrow-password-input" placeholder="Enter Your Promotion Percent">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="formrow-password-input" class="form-label">Giảm tối đa</label>
+                                <input type="number" class="form-control" ng-model="form.maxDiscount"
+                                    id="formrow-password-input" placeholder="Enter Your Max Discount">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="formrow-password-input" class="form-label">Tiền tối thiểu</label>
+                                <input type="number" class="form-control" ng-model="form.minAmount"
+                                    id="formrow-password-input" placeholder="Enter Your Max Discount">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="formrow-status-input" class="form-label">Loại khuyến mại</label><br>
+                                <input ng-model="form.type" ng-value="true"  type="radio"
+                                    class="form-check-input" name="type" />
+                                <label style="margin-left: 10px;">Cho hoá đơn</label>
+                                <input ng-model="form.type" ng-value="false"  type="radio"
+                                    class="form-check-input" name="type" />
+                                <label style="margin-left: 10px;">Cho loại phòng</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="formrow-address-input">Mô tả</label>
+                            <textarea ng-model="form.description" id="formrow-address-input" class="form-control"
+                                rows="3" placeholder="Enter Your Description"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="formrow-address-input"> Ngày bắt đầu</label>
+                            <div class="input-daterange input-group" id="datepicker6" data-date-format="dd-mm-yyyy"
+                                data-date-autoclose="true" data-provide="datepicker" data-date-container='#datepicker6'>
+                                <input datepicker type="text" class="form-control" ng-model="form.startedDate"
+                                    name="start" placeholder="Start" readonly />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="formrow-address-input"> Ngày kết thúc</label>
+                            <div class="input-daterange input-group" id="datepicker6" data-date-format="dd-mm-yyyy"
+                                data-date-autoclose="true" data-provide="datepicker" data-date-container='#datepicker6'>
+                                <input datepicker type="text" class="form-control" ng-model="form.endedDate"
+                                    name="end" placeholder="End" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                </form>
+                <br>
+                <div >
+                    <button ng-click="clear()" class="btn btn-secondary">Đặt lại</button>
+                    <button ng-if="showbut" ng-click="create()" class="btn btn-success w-md">Thêm</button>
+                    <button ng-if="!showbut" ng-click="update()" class="btn btn-warning w-md">Cập nhật</button>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive" style=" max-height:500px;">
+                            <h4 class="card-title">Danh sách khuyến mại</h4>
+
+                            <div class="table-responsive">
+                                <table id="datatable-promo" class="table table-bordered dt-responsive nowrap w-100">
+
+                                    <thead>
+                                        <tr>
+                                            <th>Tên khuyến mại</th>
+                                            <th>Phần trăm</th>
+                                            <th>Trạng thái</th>
+                                            <th>#</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="s in items | filter:searchName">
+                                            <td>{{s.name}}</td>
+                                            <td>{{s.percent}}%</td>
+                                            <td> <span class="badge rounded-pill font-size-11 "
+                                                    ng-class="s.status ? 'bg-success' : 'badge-soft-danger '">{{s.status
+                                                    ?
+                                                    'Có hiệu lực' : 'Hết hạn'}}</span></td>
+                                            <td>
+                                                <a class="btn btn-outline-secondary btn-sm edit" title="View"
+                                                    ng-click="view(s)">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a ng-click="edit(s)" class="btn btn-outline-secondary btn-sm edit"
+                                                    title="Edit">
+                                                    <i class="fas fa-pencil-alt"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- -- -->
+    <div class="modal fade" id="exampleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Promotion details</h1>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table align-middle table-nowrap">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <h6 class="m-0 text-right">Tên:</h6>
+                                    </td>
+                                    <td>
+                                        {{form1.name}}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <h6 class="m-0 text-right">Phần trăm:</h6>
+                                    </td>
+                                    <td>
+                                        {{form1.percent}}%
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <h6 class="m-0 text-right">Giảm tối đa:</h6>
+                                    </td>
+                                    <td>
+                                        {{form1.maxDiscount| currency: '' : 0}}đ
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <h6 class="m-0 text-right">Tiền tối thiểu:</h6>
+                                    </td>
+                                    <td>
+                                        {{form1.minAmount| currency: '' : 0}}đ
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <h6 class="m-0 text-right">Mô tả:</h6>
+                                    </td>
+                                    <td>
+                                        {{form1.description}}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <h6 class="m-0 text-right">Ngày bắt đầu:</h6>
+                                    </td>
+                                    <td>
+                                        {{form1.startedDate | date:'dd-MM-yyyy'}}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <h6 class="m-0 text-right">Ngày kết thúc:</h6>
+                                    </td>
+                                    <td>
+                                        {{form1.endedDate | date:'dd-MM-yyyy'}}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <h6 class="m-0 text-right">Trạng thái:</h6>
+                                    </td>
+                                    <td>
+                                        <span class="badge rounded-pill "
+                                            ng-class="form1.status ? 'bg-success' : 'badge-soft-danger'">{{form1.status
+                                            ? 'Có hiệu lực' : 'Hết hạn'}}</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <h6 class="m-0 text-right"> Loại khuyến mại:</h6>
+                                    </td>
+                                    <td>
+                                        <span class="badge rounded-pill "
+                                            ng-class="form1.type ? 'bg-success' : 'badge-soft-primary'">{{form1.type
+                                            ? 'Cho hoá đơn' : 'Cho loại phòng'}}</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button ng-click="close()" class="btn btn-secondary">Đóng</button>
+                </div>
+            </div>
+        </div>
+        <!-- /// -->
+        </div>
+    
+        <!-- -- -->
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive" style="max-height:500px;">
+                                <h4 class="card-title">Áp dụng khuyến mãi</h4>
+                                <div class="table-responsive">
+                                    <table class="table align-middle mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Mã khuyến mại</th>
+                                                <th ng-repeat="type in roomTypes">{{type.name}}</th>
+                                            </tr>
+                                        </thead>
+                                        
+                                        <tbody>
+                                            <div ng-show="loading" class="loader"> 
+                                                <div class="loader-inner">
+                                                    <div class="loader-line-wrap">
+                                                        <div class="loader-line"></div>
+                                                    </div>
+                                                    <div class="loader-line-wrap">
+                                                        <div class="loader-line"></div>
+                                                    </div>
+                                                    <div class="loader-line-wrap">
+                                                        <div class="loader-line"></div>
+                                                    </div>
+                                                    <div class="loader-line-wrap">
+                                                        <div class="loader-line"></div>
+                                                    </div>
+                                                    <div class="loader-line-wrap">
+                                                        <div class="loader-line"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+    
+                                            <tr ng-repeat="pro in promotions">
+                                                <td>{{pro.name}}</td>
+                                                <td ng-repeat="type in roomTypes">
+                                                    <div class="row">
+                                                        <div class="col-sm-12">
+                                                                <input class="form-check-input" type="checkbox"
+                                                                ng-checked="proRoomOf(type, pro)" ng-click="proRoomChanged(type, pro)">
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                        
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        </div>
+</app-layout>

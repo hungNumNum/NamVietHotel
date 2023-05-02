@@ -1,0 +1,65 @@
+<app-layout name="">
+
+    <div class="row">
+
+        <div class="col-md-8">
+            <div>
+                <label><input class="form-control" type="search" placeholder="Tìm kiếm" id="search-datatable-supplyType"></label>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="text-sm-end">
+                <a href="/#!/supply/createType" class="btn btn-secondary w-md"> Thêm kiểu vật tư</a>
+            </div>
+        </div>
+        <div class="col-md-1">
+            <div class="text-sm-end">
+                <a href="/#!/supply" class="btn btn-secondary w-md">Bảng vật tư</a>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- table--- -->
+    <div class="row">
+        <div class="col-12">
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <h4 class="card-title">Danh sách kiểu vật tư</h4>
+
+                        <div class="table-responsive">
+                            <table id = "data-table-supplyType" class="table align-middle mb-0">
+
+                                <thead>
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Tên</th>
+                                        <th>Mô tả</th>
+                                        <th>#</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="supType in supTypes | filter:searchName">
+                                        <td>{{$index + 1}}</td>
+                                        <td>{{supType.name}}</td>
+                                        <td>{{supType.description}}</td>
+
+                                        <td class="align-middle">
+                                            <button ng-click="edit(supType)" class="btn btn-outline-secondary btn-sm edit">
+                                                <a  class="text-secondary" href="/#!/supply/updateType/{{supType.id}}" title="Edit">
+                                                    <i class="fas fa-pencil-alt"></i>
+                                                </a>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</app-layout>

@@ -1,0 +1,78 @@
+<app-layout name="">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="mb-4">Danh sách kiểu thanh toán</h4>
+                    <!--Search room-->
+                    <div class="row mb-2">
+                        <div class="col-sm-4">
+                            <div id="datatable_filter" class="dataTables_filter">
+                                <label>Search:<input ng-model="searchName" type="search"
+                                        class="form-control form-control-sm" aria-controls="datatable"></label>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-8">
+                            <div class="text-sm-end">
+                                <a href="/#!/payment/create"
+                                    class="btn btn-secondary w-md"><i
+                                        class="mdi mdi-plus me-1"></i> Thêm kiểu thanh toán</a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- table content -->
+                    <table class="table table-hover table-reponsive align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Name</th>
+                                <th>Status</th>
+                                <th>Description</th>
+                                <th>#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="payment in payments | filter:searchName">
+                                <td>{{$index + 1}}</td>
+                                <td>{{payment.name}}</td>
+                                <td>
+                                    <span class="badge rounded-pill font-size-11 "
+                                        ng-class="payment.status ? 'bg-success ' :'badge-soft-danger' ">{{payment.status
+                                        ?
+                                        'Đang hoạt động' : 'Ngừng hoạt động'}}</span>
+                                </td>
+                                <td>{{payment.description}}</td>
+
+                                <td class="align-middle">
+                                    <button ng-click="edit(payment)" class="btn btn-outline-secondary btn-sm edit">
+                                        <a class="text-secondary" href="/#!/payment/update/{{payment.id}}" title="Edit">
+                                            <i class="fas fa-pencil-alt"></i>
+                                        </a>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!-- <ul class="pagination pagination-rounded justify-content-center my-4">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="javascript: void(0);" aria-label="Previous">
+                                <i class="mdi mdi-chevron-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="javascript: void(0);">1</a></li>
+                        <li class="page-item"><a class="page-link" href="javascript: void(0);">2</a></li>
+                        <li class="page-item"><a class="page-link" href="javascript: void(0);">3</a></li>
+                        <li class="page-item"><a class="page-link" href="javascript: void(0);">4</a></li>
+                        <li class="page-item"><a class="page-link" href="javascript: void(0);">5</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="javascript: void(0);" aria-label="Next">
+                                <i class="mdi mdi-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul> -->
+                </div>
+            </div>
+        </div>
+    </div>
+</app-layout>

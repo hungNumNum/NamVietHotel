@@ -1,0 +1,221 @@
+<app-layout>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <button ng-click="handlerLoadAll();" type="button" class="btn btn-danger p-3 me-1">
+                        Tất cả <span class="badge rounded-pill bg-dark">{{getTotalStatus()}}</span>
+                    </button>
+                    <button ng-click="handlerLoadByStatus(item.id)" ng-repeat="item in statuses" type="button" class="btn p-3 me-1" ng-class="getColor('btn', item.id)">
+                        {{item.name}} <span class="badge rounded-pill bg-dark">{{checkStatusCount(item.id)}}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <h5 class="card-header bg-transparent border-bottom text-uppercase">
+                    HÓA ĐƠN
+                </h5>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <input class="form-control font-size-14 p-3" type="search" placeholder="Tìm kiếm" id="search-datatable-invoices">
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group">
+                                <input ng-model="search.startDate" class="form-control font-size-14 p-3" type="date">
+                                <input ng-model="search.endDate" class="form-control font-size-14 p-3" type="date">
+                                <button ng-click="handlerLoadByRangeDate()" type="button" class="btn btn-secondary p-3">
+                                    <i class="mdi mdi-filter-outline font-size-14"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                    <table id="datatable-invoices" class="table table-bordered dt-responsive nowrap w-100">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Mã đặt</th>
+                                <th>Khách hàng</th>
+                                <th>SĐT</th>
+                                <th>Số phòng</th>
+                                <th>Tổng tiền</th>
+                                <th>Trạng thái</th>
+                                <th>Người tạo</th>
+                                <th>Ngày tạo</th>
+                                <th style="width: 100px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in invoices | orderBy:'-createdDate'">
+                                <td>
+                                    <b>{{$index + 1}}</b>
+                                </td>
+                                <td>{{item.bookingCode}}</td>
+                                <td>{{item.customer}}</td>
+                                <td>{{item.phoneNumber}}</td>
+                                <td>{{item.roomCount}}</td>
+                                <td>{{item.total | currency: '' : 0}}₫</td>
+                                <td>
+                                    <span class="badge badge-pill" ng-class="getColor('bg', item.status)">
+                                        {{item.status == 1 ? 'Đang chờ' : (item.status == 2 ? 'Chưa thanh toán' :  (item.status == 3 ? 'Chờ thanh toán' : (item.status == 4 ? 'Hoàn thành' : 'Đã huỷ')))}}
+                                    </span>
+                                </td>
+                                <td>{{item.staff}}</td>
+                                <td>{{item.createdDate | date:'HH:mm dd/MM/yyyy'}}</td>
+                                <td>
+                                    <button ng-show="search.status == 1" ng-click="modalBookingRoom('show', item)" class="btn btn-outline-success" title="Thêm phòng">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                    <a href="/#!/invoices/{{item.code}}" target="_blank" class="btn btn-outline-secondary" title="Chi tiết">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-booking-room" class="modal fade" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Thêm phòng cho hoá đơn {{invoice.code}}</h4>
+                    <button ng-click="modalBookingRoom('hide')" type="button" class="btn-close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="bookingRoomCheckoutDate" class="form-label">Ngày trả</label>
+                        <div class="input-group">
+                            <input ng-model="bookingRoom.checkoutDate" ng-blur="loadBookingRoom()"  type="date" class="form-control"
+                                id="bookingRoomCheckoutDate">
+                            <button ng-click="loadBookingRoom()" class="btn btn-secondary">Tìm kiếm</button>
+                        </div>
+                    </div>
+                    
+                    <table class="table table-bordered mb-3">
+                        <thead style="text-align: center;">
+                            <tr>
+                                <th style="width: 20%;">
+                                    <h4>Loại phòng</h4>
+                                </th>
+                                <th style="width: 25%;">
+                                    <h4>Chi tiết</h4>
+                                </th>
+                                <th style="width: 15%;">
+                                    <h4>Giá</h4>
+                                </th>
+                                <th style="width: 30%;">
+                                    <h4>Chi tiết</h4>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody style="font-size: 15px;">
+                            <tr ng-repeat="info in addBookings">
+                                <td>
+                                    <h5>{{ info.name }}</h5>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <p>Diện tích</p>
+                                            <p>Hút thuốc</p>
+                                            <p>Phù hợp</p>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <p>: {{info.roomType.area}}
+                                                m<sup>2</sup></p>
+                                            <p>: {{info.roomType.isSmoking ? 'Có' :
+                                                'Không'}}</p>
+                                            <p>: {{info.roomType.numAdults}} người
+                                                lớn và
+                                                {{info.roomType.numChilds}} trẻ em
+                                            </p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td ng-if="info.promotion == null">
+                                    <strong>{{ info.price | currency: '' :
+                                        0}}đ</strong>
+                                </td>
+                                <td ng-if="info.promotion != null">
+                                    <strong
+                                        style="text-decoration: line-through;">{{
+                                        info.price |
+                                        currency: '' : 0 }}đ</strong>
+                                    <br>
+                                    <strong style="color: red">{{ info.newPrice |
+                                        currency: '' : 0}}đ</strong>
+                                    <br>
+                                    <span
+                                        style="color: red">({{info.promotion.name}}-{{
+                                        info.promotion.percent }}%</span>
+                                    <br>
+                                    <span style="color: red">Tối đa:
+                                        {{info.promotion.maxDiscount |
+                                        currency: '' : 0}}đ)</span>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-sm-1"></div>
+                                        <div class="col-sm-10">
+                                            <div class="row">
+                                                <div class="col-sm-4 form-check"
+                                                    ng-repeat="room in info.listRooms">
+                                                    <input class="form-check-input" 
+                                                        type="checkbox" 
+                                                        id="{{room.code}}"
+                                                        ng-value="room.code"
+                                                        ng-checked="bookingRoom.roomCodes.indexOf(room.code) > -1"
+                                                        ng-click="toggleSelection(room.code)"
+                                                        name="selectedRooms[]">
+                                                    <label class="form-check-label"
+                                                        for="{{room.code}}">
+                                                        {{ room.code }}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-1"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button ng-click="handlerBookingRoom()" class="btn btn-primary">Xác nhận</button>
+                    <button ng-click="modalBookingRoom('hide')" class="btn btn-secondary">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div ng-show="isLoading" class="loader"> 
+        <div class="loader-inner">
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+        </div>
+    </div>
+</app-layout>

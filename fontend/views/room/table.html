@@ -1,0 +1,128 @@
+<app-layout name="">
+    <div class="row" data-sidebar="dark" data-layout-mode="light">
+        <div class="col-12">
+            <div class="card">
+                <h5 class="card-header bg-transparent border-bottom text-uppercase">DANH SÁCH PHÒNG</h5>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="text-sm-end d-flex justify-content-end mb-2">
+                            <div>
+                                <a href="/#!/room/create" class="btn btn-primary waves-effect waves-light mb-2 me-2"><i class="mdi mdi-plus me-1"></i>Thêm phòng</a>
+                            </div>
+                            <div>
+                                <a href="/#!/room-type" class="btn btn-primary waves-effect waves-light mb-2 me-2"><i class="dripicons-view-list me-2"></i>Loại phòng</a>
+                            </div>
+                            <div>
+                                <a href="/#!/supply" class="btn btn-primary waves-effect waves-light mb-2 me-2"><i class="dripicons-view-list me-2"></i>Vật tư</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <input type="search" class="form-control" placeholder="Tìm kiếm" id="search-datatable-rooms">
+                    </div>
+
+                    <!-- table content -->
+                    <table id="datatable-rooms" class="table table-hover table-reponsive">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Số phòng</th>
+                                <th>Tầng</th>
+                                <th>Loại phòng</th>
+                                <th>Giá</th>
+                                <th>Trạng thái</th>
+                                <th>Giường phòng</th>
+                                <th>Mô tả</th>
+                                <th style="text-align: center;">#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat = "room in rooms">
+                                <td>{{room.code}}</td>
+                                <td>{{room.floor.code}}</td>
+                                <td>{{room.roomType.name}}</td>
+                                <td>{{room.roomType.price | currency: '' : 0}} đ</td>
+                                <td>
+                                    <span ng-if="room.status == 0" class="badge badge-pill badge-soft-success font-size-12">Trống</span>
+                                    <span ng-if="room.status == 1" class="badge badge-pill badge-soft-dark font-size-12">Không hoạt động</span>
+                                    <span ng-if="room.status == 2" class="badge badge-pill badge-soft-danger font-size-12">Đang ở</span>
+                                    <span ng-if="room.status == 3" class="badge badge-pill badge-soft-purple font-size-12">Đang đặt</span>
+                                    <span ng-if="room.status == 4" class="badge badge-pill badge-soft-warning font-size-12">Chờ nhận phòng</span>
+                                    <span ng-if="room.status == 5" class="badge badge-pill badge-soft-warning font-size-12">Quá hạn</span>
+                                    <span ng-if="room.status == 6" class="badge badge-pill badge-soft-secondary font-size-12">Đang dọn dẹp</span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-outline-secondary text-secondary" title="Giường phòng" data-bs-toggle="modal" data-bs-target="#viewBedRoom" ng-click="loadBedRoom(room.bedRooms)">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                                <td>{{room.description}}</td>
+                                <td class="align-middle">
+                                    <a class="btn btn-outline-secondary edit" ng-click="edit(room)" href="/#!/room/update/{{room.id}}" title="Sửa">
+                                        <i class="fas fa-pencil-alt"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    
+                
+                    <!-- Model view bed room -->
+                    <div class="modal fade" id="viewBedRoom" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="viewBedRoomLabel">Giường trong phòng</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="table-reponsive">
+                                        <table class="table table-hover align-middle">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Tên</th>
+                                                    <th>Số lượng</th>
+                                                    <th>Mô tả</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="item in bedRoom">
+                                                    <td>{{item.bedType.name}}</td>
+                                                    <td>{{item.quantityBed}}</td>
+                                                    <td>{{item.bedType.description}}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Đóng</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End model bed room -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div ng-show="isLoading" class="loader"> 
+        <div class="loader-inner">
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+        </div>
+    </div>
+</app-layout>

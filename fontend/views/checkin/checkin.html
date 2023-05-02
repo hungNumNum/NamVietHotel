@@ -1,0 +1,457 @@
+<app-layout>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <h5 class="card-header bg-transparent border-bottom text-uppercase">
+                    NHẬN PHÒNG
+                </h5>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <h5 class="mb-2">Khách hàng</h5>
+                            <table class="table mb-0 table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th scope="row" style="width: 300px;">Họ và tên</th>
+                                        <td>{{bookingDetail.booking.customer.fullName}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">CCCD/CMND</th>
+                                        <td>{{bookingDetail.booking.customer.peopleId}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Email</th>
+                                        <td>{{bookingDetail.booking.customer.email}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">SĐT</th>
+                                        <td>{{bookingDetail.booking.customer.phoneNumber}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Địa chỉ</th>
+                                        <td>{{bookingDetail.booking.customer.address}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-6">
+                            <h5 class="mb-2">Phòng {{bookingDetail.room.code}}</h5>
+                            <table class="table mb-0 table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th scope="row" style="width: 300px;">Mã đặt</th>
+                                        <td>{{bookingDetail.booking.code}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Loại phòng</th>
+                                        <td>{{bookingDetail.room.roomType.name}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Giá phòng</th>
+                                        <td>{{bookingDetail.roomPrice | currency: '' : 0}}₫</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Ngày nhận</th>
+                                        <td>{{bookingDetail.checkinExpected | date:'dd/MM/yyyy'}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Ngày trả</th>
+                                        <td>{{bookingDetail.checkoutExpected | date:'dd/MM/yyyy'}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- end card body -->
+                <div class="card-body border-top">
+                    <div class="d-flex align-items-center">
+                        <h5 class="fw-semibold flex-grow-1">Người ở</h5>
+                        <div class="flex-shrink-0">
+                            <button ng-click="modalPeopleRoom('show')" class="btn btn-soft-primary"><i
+                                class="mdi mdi-format-list-bulleted"></i></button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table align-middle table-nowrap">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Họ tên</th>
+                                    <th scope="col">SĐT</th>
+                                    <th scope="col">Giới tính</th>
+                                    <th scope="col">Ngày sinh</th>
+                                    <th scope="col">CCCD/CMT</th>
+                                    <th scope="col" style="width: 150px;">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="item in hostedAts">
+                                    <th scope="row">
+                                        {{item.customer.fullName}}
+                                    </th>
+                                    <td>{{item.customer.phoneNumber}}</td>
+                                    <td>{{item.customer.gender ? "Nam" : "Nữ"}}</td>
+                                    <td>{{item.customer.dateOfBirth | date:'dd/MM/yyyy'}}</td>
+                                    <td>{{item.customer.peopleId}}</td>
+                                    <td>
+                                        <ul class="list-unstyled hstack gap-1 mb-0">
+                                            <li>
+                                                <button ng-click="removeHostedAt(item)"
+                                                    class="btn btn-soft-danger"><i
+                                                        class="mdi mdi-delete-outline"></i></button>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- end card body -->
+                <div class="card-body border-top">
+                    <div class="d-flex align-items-center">
+                        <h5 class="fw-semibold flex-grow-1">Dịch vụ</h5>
+                        <div class="flex-shrink-0">
+                            <button ng-click="modalServiceRoom('show')" class="btn btn-soft-primary"><i
+                                    class="mdi mdi-format-list-bulleted"></i></button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table align-middle table-nowrap">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Tên dịch vụ</th>
+                                    <th scope="col">Loại</th>
+                                    <th scope="col">Giá</th>
+                                    <th scope="col">Mô tả</th>
+                                    <th scope="col" style="width: 150px;">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="item in usedServices">
+                                    <th scope="row">
+                                        {{item.serviceRoom.name}}
+                                    </th>
+                                    <td>{{item.serviceRoom.serviceType.name}}</td>
+                                    <td>{{item.serviceRoom.price | currency: '' : 0}}₫</td>
+                                    <td>{{item.serviceRoom.description}}</td>
+                                    <td>
+                                        <ul class="list-unstyled hstack gap-1 mb-0">
+                                            <li>
+                                                <button ng-click="removeServiceRoom(item)"
+                                                    class="btn btn-soft-danger"><i
+                                                        class="mdi mdi-delete-outline"></i></button>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-body border-top">
+                    <a ng-href="/#!/hotel-room" class="btn btn-secondary waves-effect waves-light"><i
+                        class="mdi mdi-arrow-left"></i> Quay lại</a>
+                    <div class="float-end">
+                        <button ng-click="modalSurchargeRoom('show')" class="btn btn-primary waves-effect waves-light" title="Phụ phí">
+                            <i class="bx bx-money"></i>
+                        </button>
+                        <button ng-click="handlerCheckin()" class="btn btn-success waves-effect waves-light"><i
+                                class="mdi mdi-login-variant"></i> Nhận phòng</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-people-room" class="modal modal-lg fade" data-bs-backdrop="static" data-bs-keyboard="false"
+        tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Thêm khánh hàng</h5>
+                    <button ng-click="modalPeopleRoom('hide')" type="button" class="btn-close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="nav nav-tabs nav-tabs-custom nav-justified" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#customer-tab" role="tab">
+                                <span class="d-block d-sm-none"><i class="fas fa-home"></i></span>
+                                <span class="d-none d-sm-block">DS KHÁCH HÀNG</span> 
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#add-customer-tab" role="tab">
+                                <span class="d-block d-sm-none"><i class="far fa-user"></i></span>
+                                <span class="d-none d-sm-block">THÊM KHÁCH HÀNG</span> 
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="tab-content py-3">
+                        <div class="tab-pane active" id="customer-tab" role="tabpanel">
+                            <table class="table mb-2 table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th scope="row">Phụ phí người lớn</th>
+                                        <td>
+                                            {{bookingDetail.room.roomType.adultSurcharge | currency: '' : 0}}₫/người, thêm tối đa
+                                            {{bookingDetail.room.roomType.maxAdultsAdd}}, ({{peopleInRoom.numAdults}}/{{bookingDetail.room.roomType.numAdults}})
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Phụ phí trẻ em</th>
+                                        <td>
+                                            {{bookingDetail.room.roomType.childSurcharge | currency: '' : 0}}₫/người, thêm tối đa
+                                            {{bookingDetail.room.roomType.maxChildsAdd}}, ({{peopleInRoom.numChilds}}/{{bookingDetail.room.roomType.numChilds}})
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <input class="form-control" type="search" placeholder="Tìm kiếm" id="search-datatable-customer">
+                            <div class="table-responsive">
+                                <table id="datatable-customer" class="table align-middle table-nowrap table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Họ tên</th>
+                                            <th scope="col">SĐT</th>
+                                            <th scope="col">Giới tính</th>
+                                            <th scope="col">Ngày sinh</th>
+                                            <th scope="col">CCCD/CMT</th>
+                                            <th scope="col" style="width: 100px;">Hành động</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="item in customers">
+                                            <th scope="row">
+                                                {{item.fullName}}
+                                            </th>
+                                            <td>{{item.phoneNumber}}</td>
+                                            <td>{{item.gender ? "Nam" : "Nữ"}}</td>
+                                            <td>{{item.dateOfBirth | date:'dd/MM/yyyy'}}</td>
+                                            <td>{{item.peopleId}}</td>
+                                            <td>
+                                                <ul class="list-unstyled hstack gap-1 mb-0">
+                                                    <li>
+                                                        <button ng-click="handlerAddCustomer(item)"
+                                                            class="btn btn-soft-success"><i
+                                                                class="mdi mdi-plus"></i></button>
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="add-customer-tab" role="tabpanel">
+                            <form>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label for="peopleId" class="form-label">CCCD/CMND</label>
+                                            <input ng-model="customer.peopleId" class="form-control" id="peopleId">
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label for="fullName" class="form-label">Họ và tên</label>
+                                            <input ng-model="customer.fullName" class="form-control" id="fullName">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label for="phoneNumber" class="form-label">SĐT</label>
+                                            <input ng-model="customer.phoneNumber" class="form-control" id="phoneNumber">
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label for="email" class="form-label">Email</label>
+                                            <input ng-model="customer.email" type="email" class="form-control" id="email">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label for="dateOfBirth" class="form-label">Ngày sinh</label>
+                                            <input ng-model="customer.dateOfBirth" type="date" class="form-control" id="dateOfBirth">
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label for="placeOfBirth" class="form-label">Quê quán</label>
+                                            <input ng-model="customer.placeOfBirth" class="form-control" id="placeOfBirth">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="mb-3">
+                                            <label class="form-label">Giới tính</label>
+                                            <div class="d-flex">
+                                                <div class="form-check  form-check-inline">
+                                                    <input ng-model="customer.gender" class="form-check-input" type="radio"
+                                                        id="form-radio-male" ng-value="true">
+                                                    <label class="form-check-label" for="form-radio-male">
+                                                        Nam
+                                                    </label>
+                                                </div>
+                                                <div class="form-check  form-check-inline">
+                                                    <input ng-model="customer.gender" class="form-check-input" type="radio"
+                                                        id="form-radio-female" ng-value="false">
+                                                    <label class="form-check-label" for="form-radio-female">
+                                                        Nữ
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="mb-3">
+                                            <label for="address" class="form-label">Địa chỉ</label>
+                                            <textarea ng-model="customer.address" rows="3" class="form-control" id="address"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">
+                                        <button type="button" class="btn btn-secondary btn-sm"
+                                            ng-click="takePicture()">Camera</button> Chụp ảnh cmnd/cccd
+                                    </label>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="card mb-3">
+                                                <div class="card-header">
+                                                    Mặt trước
+                                                </div>
+                                                <div class="card-body">
+                                                    <img ng-src="{{ frontIdCardDisplay }}"
+                                                        style="width: 100%; height: 100%;">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="card mb-3">
+                                                <div class="card-header">
+                                                    Mặt sau
+                                                </div>
+                                                <div class="card-body">
+                                                    <img ng-src="{{ backIdCardDisplay }}"
+                                                        style="width: 100%; height: 100%;">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button ng-click="handlerCreateCustomer()" class="btn btn-success">Thêm khách hàng</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button ng-click="modalPeopleRoom('hide')" class="btn btn-secondary">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="modal-service-room" class="modal modal-lg fade" data-bs-backdrop="static" tabindex="-1" role="dialog"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Dịch vụ</h5>
+                    <button ng-click="modalServiceRoom('hide')" type="button" class="btn-close"></button>
+                </div>
+                <div class="modal-body">
+                    <input class="form-control" type="search" placeholder="Tìm kiếm" id="search-datatable-service-room">
+                    <div class="table-responsive">
+                        <table id="datatable-service-room" class="table align-middle table-nowrap table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Tên dịch vụ</th>
+                                    <th scope="col">Loại</th>
+                                    <th scope="col">Giá</th>
+                                    <th scope="col" style="width: 100px;">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="item in serviceRooms | filter:searchService">
+                                    <th scope="row">
+                                        {{item.code}}
+                                    </th>
+                                    <td>{{item.name}}</td>
+                                    <td>{{item.serviceType.name}}</td>
+                                    <td>{{item.price | currency: '' : 0}}₫</td>
+                                    <td>
+                                        <ul class="list-unstyled hstack gap-1 mb-0">
+                                            <li>
+                                                <button ng-click="addServiceRoom(item)"
+                                                    class="btn btn-soft-success"><i
+                                                        class="mdi mdi-plus"></i></button>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button ng-click="modalServiceRoom('hide')" class="btn btn-secondary">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-surcharge-room" class="modal fade" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Phụ phí phòng {{bookingDetail.room.code}}</h5>
+                    <button ng-click="modalSurchargeRoom('hide')" type="button" class="btn-close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="deposit" class="form-label">Nhận phòng sớm</label>
+                                <input ng-model="invoiceDetail.earlyCheckinFee" type="number" min="0"
+                                    class="form-control" id="deposit">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button ng-click="modalSurchargeRoom('hide')" type="button"
+                        class="btn btn-secondary waves-effect">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div ng-show="isLoading" class="loader"> 
+        <div class="loader-inner">
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+        </div>
+    </div>
+</app-layout>

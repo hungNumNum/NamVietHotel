@@ -1,0 +1,60 @@
+<app-layout>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <h5 class="card-header bg-transparent border-bottom text-uppercase">
+                    PHÂN QUYỀN
+                </h5>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <a href="/#!/accounts" class="btn btn-primary w-md waves-effect waves-light">
+                            <i class="mdi mdi-format-list-bulleted"></i> Tài khoản
+                        </a>
+                    </div>
+                    <input class="form-control" type="search" placeholder="Tìm kiếm" id="search-datatable-user-role">
+                    <table id="datatable-user-role" class="table table-bordered dt-responsive nowrap w-100">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Tên đăng nhập</th>
+                                <th ng-repeat="role in roles">{{role.name}}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="account in accounts">
+                                <td>
+                                    <b>{{$index + 1}}</b>
+                                </td>
+                                <td>{{account.username}}</td>
+                                <td ng-repeat="role in roles">
+                                    <input type="checkbox" ng-checked="userRoleOf(account, role)"
+                                        ng-click="userRoleChanged(account, role)">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div ng-show="isLoading" class="loader"> 
+        <div class="loader-inner">
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+        </div>
+    </div>
+</app-layout>

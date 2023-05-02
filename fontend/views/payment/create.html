@@ -1,0 +1,46 @@
+<app-layout name="">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="mb-4">Create Payment Form</h4>
+                    <form>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="formrow-name-input" class="form-label">Name</label>
+                                    <input ng-model="form.name" type="text" class="form-control" id="formrow-name-input"
+                                        placeholder="Enter Name">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="formrow-status-input">Status</label>
+                                    <select ng-model="form.status" id="formrow-status-input" class="form-select">
+                                        <option ng-value="1">Đang hoạt động</option>
+                                        <option ng-value="0">Ngừng hoạt động</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label for="formrow-description-input">Description</label>
+                                    <textarea ng-model="form.description" id="formrow-description-input"
+                                        class="form-control" rows="3" placeholder="Enter Description"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div>
+                                <button ng-click="create()"
+                                    class="btn btn-secondary w-md">Thêm</button>
+                                <button ng-click="reset()"
+                                    class="btn btn-secondary w-md">Làm mới</button> <a href="/#!/payment" class="btn btn-secondary w-md">Đóng</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</app-layout>

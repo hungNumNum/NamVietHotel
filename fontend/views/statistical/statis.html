@@ -1,0 +1,239 @@
+<app-layout name="">
+   <div ng-show="loading" class="loader"> 
+      <div class="loader-inner">
+          <div class="loader-line-wrap">
+              <div class="loader-line"></div>
+          </div>
+          <div class="loader-line-wrap">
+              <div class="loader-line"></div>
+          </div>
+          <div class="loader-line-wrap">
+              <div class="loader-line"></div>
+          </div>
+          <div class="loader-line-wrap">
+              <div class="loader-line"></div>
+          </div>
+          <div class="loader-line-wrap">
+              <div class="loader-line"></div>
+          </div>
+      </div>
+  </div>
+   <!-- ///// -->
+
+   <div class="row">
+
+      <div class="col-xl-3 col-sm-6" ng-class="{'active-table': currentTable == 0}">
+         <div class="card mb-3" style="max-width: 540px;height: 250px;">
+            <div class="d-flex align-items-center justify-content-center h-100">
+               <div class="card-body">
+                  <h4 class="card-title mb-4">Hàng ngày</h4>
+                  <div class="row">
+                     <div class="col-sm-12">
+                        <p class="text-muted">Doanh thu hôm nay</p>
+                        <h3>{{totals['Today'] | currency: '' : 0}} VND</h3>
+                        <p class="text-muted">
+                           <span
+                              ng-class="{'text-success': (totals['Today']-totals['Yesterday'])/totals['Yesterday'] >= 0, 'text-danger': (totals['Today']-totals['Yesterday'])/totals['Yesterday'] < 0 }"
+                              class="me-2" ng-show="totals['Yesterday']">
+                              {{((totals['Today']-totals['Yesterday'])/totals['Yesterday']*100)| number: 0 }}%
+                              <i ng-class="{'mdi mdi-arrow-up': (totals['Today']-totals['Yesterday'])/totals['Yesterday'] >= 0, 'bx bx-down-arrow-alt': (totals['Today']-totals['Yesterday'])/totals['Yesterday'] < 0 }"></i>
+                           </span>
+                           <span class="text-success me-2" ng-hide="totals['Yesterday']">N/A</span>Lợi nhuận với hôm qua
+                        </p>
+
+                        <p class="text-muted"><span class="text-danger me-2">{{totals1['Today']}}
+                           </span>Lượt đặt hôm nay</p>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+
+      <div class="col-xl-3 col-sm-6" ng-class="{'active-table': currentTable == 0}">
+         <div class="card mb-3" style="max-width: 540px;height: 250px;">
+            <div class="d-flex align-items-center justify-content-center h-100">
+               <div class="card-body">
+                  <h4 class="card-title mb-4">Hàng tuần</h4>
+                  <div class="row">
+                     <div class="col-sm-12">
+                        <p class="text-muted">Doanh thu tuần này</p>
+                        <h3>{{totals['This week'] | currency: '' : 0}} VND</h3>
+                        <p class="text-muted">
+                           <span
+                              ng-class="{'text-success': (totals['This week']-totals['Last week'])/totals['Last week'] >= 0, 'text-danger': (totals['This week']-totals['Last week'])/totals['Last week'] < 0 }"
+                              class="me-2" ng-show="totals['Last week']">
+                              {{((totals['This week']-totals['Last week'])/totals['Last week']*100)| number: 0 }}%
+                              <i ng-class="{'mdi mdi-arrow-up': (totals['This week']-totals['Last week'])/totals['Last week'] >= 0, 'bx bx-down-arrow-alt': (totals['This week']-totals['Last week'])/totals['Last week'] < 0 }"></i>
+                           </span>
+                           <span class="text-success me-2" ng-hide="totals['Last week']">N/A</span>Lợi nhuận với tuần
+                           trước
+                        </p>
+                        <p class="text-muted"><span class="text-danger me-2">{{totals1['This Week']}}
+                           </span>Lượt đặt tuần này</p>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+
+      <div class="col-xl-3 col-sm-6" ng-class="{'active-table': currentTable == 0}">
+         <div class="card mb-3" style="max-width: 540px; height: 250px;">
+            <div class="d-flex align-items-center justify-content-center h-100">
+               <div class="card-body">
+                  <h4 class="card-title mb-4">Hàng tháng</h4>
+                  <div class="row">
+                     <div class="col-sm-12">
+                        <p class="text-muted">Doanh thu tháng này</p>
+                        <h3>{{totals['This month'] | currency: '' : 0}} VND</h3>
+                        <p class="text-muted">
+                           <span
+                              ng-class="{'text-success': (totals['This month']-totals['Last month'])/totals['Last month'] >= 0, 'text-danger': (totals['This month']-totals['Last month'])/totals['Last month'] < 0 }"
+                              class="me-2" ng-show="totals['Last month']">
+                              {{((totals['This month']-totals['Last month'])/totals['Last month']*100)| number: 0 }}%
+                              <i ng-class="{'mdi mdi-arrow-up': (totals['This month']-totals['Last month'])/totals['Last month'] >= 0, 'bx bx-down-arrow-alt': (totals['This month']-totals['Last month'])/totals['Last month'] < 0 }"></i>
+                           </span>
+                           <span class="text-success me-2" ng-hide="totals['Last month']">N/A</span>Lợi nhuận với tháng
+                           trước
+                        </p>
+                        <p class="text-muted"><span class="text-danger me-2">{{totals1['This Month']}}
+                           </span>Lượt đặt tháng này</p>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+
+      <div class="col-xl-3 col-sm-6" ng-class="{'active-table': currentTable == 0}">
+         <div class="card mb-3" style="max-width: 540px;height: 250px;">
+            <div class="d-flex align-items-center justify-content-center h-100">
+               <div class="card-body">
+                  <div class="row">
+                     <h4 class="card-title col-sm-8">Tuỳ chọn</h4>
+                     <button style="max-width: 50px;" ng-click="getByDate()"
+                        class="btn btn-primary col-sm-4 ms-auto text-end">Lọc</button>
+                  </div>
+
+                  <div class="row">
+                     <div class="col-sm-12">
+                        <p class="text-muted">Hãy chọn khoảng ngày</p>
+                        <h3>{{customTotal | currency: '' : 0}} VND</h3>
+                        <div class="load-bar" ng-show="loading">
+                           <div class="bar"></div>
+                           <div class="bar"></div>
+                           <div class="bar"></div>
+                        </div>
+                        <p class="text-muted"><span class="text-danger me-2">{{customTotal1}}
+                           </span>Lượt đặt được tìm thấy</p>
+                        <div class="row">
+                           <div class="col-md-6"> <label for="formrow-address-input"> Ngày bắt đầu</label>
+                              <input class="form-control" type="date" id="myDate">
+                           </div>
+                           <div class="col-md-6"><label for="formrow-address-input"> Ngày kết thúc</label>
+                              <input class="form-control" type="date" id="myDate1">
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+
+      </div>
+   </div>
+
+   <!-- <div id="line_top_x"></div> -->
+   <div class="row">
+
+      <div class="col-xl-8 col-sm-6" ng-class="{'active-table': currentTable == 0}">
+         <div class="card mb-3">
+            <div class="d-flex align-items-center justify-content-center h-100">
+               <div class="card-body">
+                  <div id="line_top_x"></div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="col-xl-4 col-sm-6" ng-class="{'active-table': currentTable == 0}">
+         <div class="card mb-3">
+            <div class="d-flex align-items-center justify-content-center h-100">
+               <div class="card-body">
+                     <table class="table align-middle mb-0">
+                        <thead>
+                           <tr>
+                              <th>Top 4 Loại Phòng</th>
+                              <th style="width: 175px;">Lượt đặt</th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                           <tr ng-repeat="data in statisticalData1">
+                              <td>
+                                 {{ data[0]}}
+                              </td>
+                              <td>{{ data[1] }}</td>
+                           </tr>
+                        </tbody>
+                     </table>
+                     <!-- <table class="table align-middle mb-0">
+                        <thead>
+                           <tr>
+                              <th>Top 4 Phòng</th>
+                              <th>Lượt đặt</th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                           <tr ng-repeat="data in statisticalData">
+                              <td>
+                                 <i class="bx bx-hotel"></i>
+                                 {{ data[0] }}
+                              </td>
+                              <td>{{ data[1] }}</td>
+                           </tr>
+                        </tbody>
+                     </table> -->
+                     <table class="table align-middle mb-2">
+                        <thead>
+                           <tr>
+                              <th>Top 4 Dịch vụ</th>
+                              <th style="width: 175px;">Lượt sử dụng</th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                           <tr ng-repeat="data in statisticalData2">
+                              <td>
+                                 <i class="bx bx-bell"></i>
+                                 {{ data[0] }}
+                              </td>
+                              <td>{{ data[1] }}</td>
+                           </tr>
+                        </tbody>
+                     </table>
+                     <!-- <table>
+                        <thead>
+                          <tr>
+                            <th>Loại phòng</th>
+                            <th>Tổng số phòng đã đặt</th>
+                            <th>Tổng doanh thu</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr ng-repeat="room in excels">
+                            <td>{{room[0]}}</td>
+                            <td>{{room[1]}}</td>
+                            <td>{{room[2] | currency: '' : 0}}</td>
+                          </tr>
+                        </tbody>
+                      </table> -->
+                  <div class="float-end">
+                     <button type="button" class="btn btn-success" ng-click="exportToExcel()">Xuất Excel
+                    </button>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+
+</app-layout>

@@ -1,0 +1,838 @@
+<app-layout>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <span>
+                        <input ng-click="search.status = null" type="radio" class="btn-check" name="room-status"
+                            id="status">
+                        <label class="btn p-3 fs-14 btn-purple" for="status">Tất cả <span
+                                class="badge rounded-pill bg-dark">{{getTotalStatus()}}</span></label>
+                    </span>
+                    <span ng-repeat="item in statuses">
+                        <input ng-click="search.status = item.id" type="radio" class="btn-check" name="room-status"
+                            id="status{{item.id}}">
+                        <label class="btn p-3 fs-14" for="status{{item.id}}" ng-class="getColor('btn', item.id)"
+                            title="{{item.description}}">
+                            {{item.name}} <span class="badge rounded-pill bg-dark">{{checkStatusCount(item.id)}}</span>
+                        </label>
+                    </span>
+                    <div class="float-end">
+                        <div class="input-group">
+                            <input ng-model="search.keyword" class="form-control p-3" type="search" id="keyword" placeholder="Tìm kiếm">
+                            <button ng-click="modalQRCodeScan('show')" class="btn btn-secondary" type="button"><i class="mdi mdi-qrcode-scan font-size-16"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div ng-repeat="room in hotelRooms | filter : filterFn as filtered"
+            class="col-xl-2 col-sm-3">
+            <div class="card border border-3" ng-class="getColor('border', room.status)">
+                <div class="card-body p-2">
+                    <div class="">
+                        <div class="float-end ms-2">
+                            <div class="dropdown mb-2">
+                                <button id="dropdownMenuButton1" class="btn btn-sm btn-soft-primary rounded-pill"
+                                    data-bs-toggle="dropdown" aria-expanded="false"><i
+                                        class="mdi mdi-dots-horizontal"></i></button>
+                                <div aria-labelledby="dropdownMenuButton1" class="dropdown-menu dropdown-menu-start font-size-14">
+                                    <button ng-show="room.status == 4" ng-click="checkin(room)" class="dropdown-item"><i
+                                            class="mdi mdi-login-variant"></i> Nhận phòng</button>
+                                    <button ng-show="room.status == 2" ng-click="modalUsedService('show', room)"
+                                        class="dropdown-item"><i class="mdi mdi-room-service-outline"></i> Dịch
+                                        vụ</button>
+                                    <button ng-show="room.status == 2" ng-click="modalHostedAt('show', room)"
+                                        class="dropdown-item"><i class="mdi mdi-account-group-outline"></i> Người
+                                        ở</button>
+                                    <button ng-show="room.status == 2" ng-click="modalChangeRoom('show', room)"
+                                        class="dropdown-item"><i class="mdi mdi-shuffle-variant"></i> Đổi phòng</button>
+                                    <button ng-show="room.status == 2 || room.status == 5"
+                                        ng-click="modalExtendDate('show', room)" class="dropdown-item"><i
+                                            class="mdi mdi-calendar-plus"></i> Gia hạn</button>
+                                    <button ng-show="room.status == 2 || room.status == 5" ng-click="checkout(room)"
+                                        class="dropdown-item"><i class="mdi mdi-logout-variant"></i> Trả phòng</button>
+                                    <button ng-show="room.status == 4" ng-click="modalCancelRoom('show', room)"
+                                        class="dropdown-item"><i class="mdi mdi-cancel"></i> Huỷ phòng</button>
+                                    <button ng-show="room.status == 6" ng-click="handlerReadyRoom(room)"
+                                        class="dropdown-item"><i class="mdi mdi-broom"></i> Sẵn sàng</button>
+                                    <button ng-click="modalInfoRoom('show', room)" class="dropdown-item"><i
+                                            class="mdi mdi-information-outline"></i> Chi tiết</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="avatar-xs me-3">
+                            <div class="avatar-title bg-transparent rounded">
+                                <i class="bx bx-hotel font-size-24" ng-class="getColor('text', room.status)"></i>
+                            </div>
+                        </div>
+                        <p class="text-truncate mb-0">
+                            {{room.roomType}}
+                        </p>
+                        <div class="text-center">
+                            <h5 class="font-size-16 text-truncate mb-2">{{room.code}}</h5>
+                            <div ng-show="room.status == 4 || room.status == 5 || room.status == 2">
+                                <p class="font-size-14 text-truncate mb-0">
+                                    {{room.customer}}
+                                </p>
+                                <p class="font-size-14 text-truncate mb-2">
+                                    {{room.phoneNumber}}
+                                </p>
+                            </div>
+                            <div ng-show="room.status != 4 && room.status != 5 && room.status != 2">
+                                <p class="font-size-14 text-truncate mb-0">
+                                    {{getStatus(room.status).name}}
+                                </p>
+                                <p class="font-size-14 text-white mb-2">---</p>
+                            </div>
+                        </div>
+                        <div class="d-flex">
+                            <div class="overflow-hidden me-auto">
+                                <p class="text-truncate mb-0">
+                                    {{(room.status == 4 || room.status == 5 || room.status == 2) ? (room.checkinExpected
+                                    | date:'dd-MM') : '---'}}
+                                </p>
+                            </div>
+                            <div class="align-self-end ms-2">
+                                <p class="text-truncate mb-0">
+                                    {{(room.status == 4 || room.status == 5 || room.status == 2) ?
+                                    (room.checkoutExpected | date:'dd-MM') : '---'}}
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div ng-show="!isLoading && filtered.length == 0" class="text-center">
+        <p class="font-size-14 text-truncate mb-0">
+            Danh sách trống
+        </p>
+    </div>
+
+    <div id="modal-change-room" class="modal fade" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Đổi phòng {{selectRoom.code}}</h5>
+                    <button ng-click="modalChangeRoom('hide')" type="button" class="btn-close"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table mb-0 table-bordered mb-3">
+                        <tbody>
+                            <tr>
+                                <th scope="row" style="width: 300px;">Loại phòng</th>
+                                <td>{{invoiceDetail.room.roomType.name}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Giá phòng</th>
+                                <td>{{invoiceDetail.roomPrice | currency: '' : 0}}₫</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Ngày nhận</th>
+                                <td>{{invoiceDetail.checkinExpected | date:'dd/MM/yyyy'}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Ngày trả</th>
+                                <td>{{invoiceDetail.checkoutExpected | date:'dd/MM/yyyy'}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="mb-3">
+                        <label for="changeRoomCheckoutDate" class="form-label">Ngày trả</label>
+                        <div class="input-group">
+                            <input ng-blur="handlerFindChangeRoom()" ng-model="changeRoom.checkoutDate" type="date"
+                                class="form-control" id="changeRoomCheckoutDate">
+                            <button ng-click="handlerFindChangeRoom()" class="btn btn-secondary">Tìm</button>
+                        </div>
+                    </div>
+                    <table class="table table-bordered mb-3">
+                        <thead style="text-align: center;">
+                            <tr>
+                                <th style="width: 20%;">
+                                    <h4>Loại phòng</h4>
+                                </th>
+                                <th style="width: 25%;">
+                                    <h4>Chi tiết</h4>
+                                </th>
+                                <th style="width: 15%;">
+                                    <h4>Giá</h4>
+                                </th>
+                                <th style="width: 30%;">
+                                    <h4>Chi tiết</h4>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody style="font-size: 15px;">
+                            <tr ng-repeat="info in addBookings">
+                                <td>
+                                    <h5>{{ info.name }}</h5>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <p>Diện tích</p>
+                                            <p>Hút thuốc</p>
+                                            <p>Phù hợp</p>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <p>: {{info.roomType.area}}
+                                                m<sup>2</sup></p>
+                                            <p>: {{info.roomType.isSmoking ? 'Có' :
+                                                'Không'}}</p>
+                                            <p>: {{info.roomType.numAdults}} người
+                                                lớn và
+                                                {{info.roomType.numChilds}} trẻ em
+                                            </p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td ng-if="info.promotion == null">
+                                    <strong>{{ info.price | currency: '' :
+                                        0}}đ</strong>
+                                </td>
+                                <td ng-if="info.promotion != null">
+                                    <strong
+                                        style="text-decoration: line-through;">{{
+                                        info.price |
+                                        currency: '' : 0 }}đ</strong>
+                                    <br>
+                                    <strong style="color: red">{{ info.newPrice |
+                                        currency: '' : 0}}đ</strong>
+                                    <br>
+                                    <span
+                                        style="color: red">({{info.promotion.name}}-{{
+                                        info.promotion.percent }}%</span>
+                                    <br>
+                                    <span style="color: red">Tối đa:
+                                        {{info.promotion.maxDiscount |
+                                        currency: '' : 0}}đ)</span>
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-sm-1"></div>
+                                        <div class="col-sm-10">
+                                            <div class="row">
+                                                <div class="col-sm-4 form-check"
+                                                    ng-repeat="room in info.listRooms">
+                                                    <input class="form-check-input"
+                                                        type="radio"
+                                                        id="{{room.code}}"
+                                                        name="toRoomCode"
+                                                        ng-value="room.code"
+                                                        ng-model="changeRoom.toRoomCode">
+                                                    <label class="form-check-label"
+                                                        for="{{room.code}}">
+                                                        {{ room.code }}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-1"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="mb-3">
+                        <label for="changeRoomNote" class="form-label">Ghi chú</label>
+                        <textarea ng-model="changeRoom.note" class="form-control" id="changeRoomNote"
+                            rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button ng-click="handlerChangeRoom()" class="btn btn-primary">Xác nhận</button>
+                    <button ng-click="modalChangeRoom('hide')" class="btn btn-secondary">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="modal-extend-date" class="modal fade" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Gia hạn ngày trả phòng {{selectRoom.code}}</h5>
+                    <button ng-click="modalExtendDate('hide')" type="button" class="btn-close"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table mb-0 table-bordered mb-3">
+                        <tbody>
+                            <tr>
+                                <th scope="row" style="width: 300px;">Loại phòng</th>
+                                <td>{{invoiceDetail.room.roomType.name}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Giá phòng</th>
+                                <td>{{invoiceDetail.roomPrice | currency: '' : 0}}₫</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Ngày nhận</th>
+                                <td>{{invoiceDetail.checkinExpected | date:'dd/MM/yyyy'}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Ngày trả</th>
+                                <td>{{invoiceDetail.checkoutExpected | date:'dd/MM/yyyy'}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <label for="extendCheckoutRoomDate" class="form-label">Ngày trả</label>
+                                <div class="input-group">
+                                    <input ng-model="extendCheckoutRoom.extendDate" type="date" class="form-control"
+                                        id="extendCheckoutRoomDate">
+                                    <button ng-click="handlerCheckExtendCheckout()" class="btn btn-secondary">Kiểm
+                                        tra</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <label for="extendCheckoutRoomNote" class="form-label">Ghi chú</label>
+                                <textarea ng-model="extendCheckoutRoom.note" class="form-control" rows="3"
+                                    id="extendCheckoutRoomNote"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button ng-click="handlerExtendDateRoom()" class="btn btn-primary">Gia hạn</button>
+                    <button ng-click="modalExtendDate('hide')" class="btn btn-secondary">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="modal-used-service" class="modal fade" data-bs-backdrop="static" tabindex="-1" aria-hidden="true"
+        data-bs-keyboard="false">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Dịch vụ phòng {{selectRoom.code}}</h5>
+                    <button ng-click="modalUsedService('hide')" type="button" class="btn-close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="nav nav-tabs nav-tabs-custom nav-justified" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#used-service-tab" role="tab">
+                                <span class="d-block d-sm-none"><i class="fas fa-home"></i></span>
+                                <span class="d-none d-sm-block">SỬ DỤNG DỊCH VỤ</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#service-tab" role="tab">
+                                <span class="d-block d-sm-none"><i class="far fa-user"></i></span>
+                                <span class="d-none d-sm-block">DỊCH VỤ</span>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="tab-content py-3">
+                        <div class="tab-pane active" id="used-service-tab" role="tabpanel">
+                            <input class="form-control" type="text" placeholder="Tìm kiếm"
+                                id="search-datatable-used-service">
+                            <div class="table-responsive">
+                                <table id="datatable-used-service" class="table align-middle table-nowrap table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col">Tên dịch vụ</th>
+                                            <th scope="col">Giá</th>
+                                            <th scope="col">Từ ngày</th>
+                                            <th scope="col">Đến ngày</th>
+                                            <th scope="col">Thành tiền</th>
+                                            <th scope="col"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="item in usedServices">
+                                            <th scope="row">
+                                                {{item.serviceRoom.code}}
+                                            </th>
+                                            <td>{{item.serviceRoom.name}}</td>
+                                            <td>{{item.servicePrice | currency: '' : 0}}₫</td>
+                                            <td>{{item.startedTime | date:'dd/MM'}}</td>
+                                            <td>{{item.endedTime | date:'dd/MM'}}</td>
+                                            <td>{{getTotalUsedService(item) | currency: '' : 0}}₫</td>
+                                            <td>
+                                                <ul class="list-unstyled hstack gap-1 mb-0">
+                                                    <li>
+                                                        <button title="Ngừng sử dụng" ng-disabled="item.isUsed"
+                                                            ng-click="removeServiceRoom(item)"
+                                                            class="btn btn-soft-secondary"><i
+                                                                class="mdi mdi-stop"></i></button>
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="service-tab" role="tabpanel">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="mb-3">
+                                        <label for="startedTime" class="form-label">Từ ngày</label>
+                                        <input ng-model="usedServiceDate.startedTime" type="date" class="form-control"
+                                            id="startedTime">
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="mb-3">
+                                        <label for="endedTime" class="form-label">Đến ngày</label>
+                                        <input ng-model="usedServiceDate.endedTime" type="date" class="form-control"
+                                            id="endedTime">
+                                    </div>
+                                </div>
+                            </div>
+                            <input class="form-control" type="search" placeholder="Tìm kiếm"
+                                id="search-datatable-service-room">
+                            <div class="table-responsive mb-3">
+                                <table id="datatable-service-room" class="table align-middle table-nowrap table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col">Tên dịch vụ</th>
+                                            <th scope="col">Loại</th>
+                                            <th scope="col">Giá</th>
+                                            <th scope="col"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="item in services">
+                                            <th scope="row">
+                                                {{item.code}}
+                                            </th>
+                                            <td>{{item.name}}</td>
+                                            <td>{{item.serviceType.name}}</td>
+                                            <td>{{item.price | currency: '' : 0}}₫</td>
+                                            <td>
+                                                <ul class="list-unstyled hstack gap-1 mb-0">
+                                                    <li>
+                                                        <button title="Thêm dịch vụ" ng-click="addServiceRoom(item)"
+                                                            class="btn btn-soft-success"><i
+                                                                class="mdi mdi-plus"></i></button>
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button ng-click="modalUsedService('hide')" class="btn btn-secondary">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="modal-hosted-at" class="modal fade" data-bs-backdrop="static" tabindex="-1" aria-hidden="true"
+        data-bs-keyboard="false">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Người ở phòng {{selectRoom.code}}</h5>
+                    <button ng-click="modalHostedAt('hide')" type="button" class="btn-close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="nav nav-tabs nav-tabs-custom nav-justified" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#hosted-at-tab" role="tab">
+                                <span class="d-block d-sm-none"><i class="fas fa-home"></i></span>
+                                <span class="d-none d-sm-block">DS NGƯỜI Ở</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#customer-tab" role="tab">
+                                <span class="d-block d-sm-none"><i class="fas fa-home"></i></span>
+                                <span class="d-none d-sm-block">DS KHÁCH HÀNG</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#add-customer-tab" role="tab">
+                                <span class="d-block d-sm-none"><i class="far fa-user"></i></span>
+                                <span class="d-none d-sm-block">THÊM KHÁCH HÀNG</span>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="tab-content py-3">
+                        <div class="tab-pane active" id="hosted-at-tab" role="tabpanel">
+                            <table class="table mb-2 table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th scope="row">Phụ phí người lớn</th>
+                                        <td>
+                                            {{room.roomType.adultSurcharge | currency: '' : 0}}₫/người, thêm tối đa
+                                            {{room.roomType.maxAdultsAdd}}, đang ở
+                                            ({{peopleInRoom.numAdults}}/{{room.roomType.numAdults}})
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Phụ phí trẻ em</th>
+                                        <td>
+                                            {{room.roomType.childSurcharge | currency: '' : 0}}₫/người, thêm tối đa
+                                            {{room.roomType.maxChildsAdd}}, đang ở
+                                            ({{peopleInRoom.numChilds}}/{{room.roomType.numChilds}})
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <input class="form-control" type="search" placeholder="Tìm kiếm"
+                                id="search-datatable-hosted-at">
+                            <div class="table-responsive">
+                                <table id="datatable-hosted-at" class="table align-middle table-nowrap table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Họ tên</th>
+                                            <th scope="col">SĐT</th>
+                                            <th scope="col">Giới tính</th>
+                                            <th scope="col">Ngày sinh</th>
+                                            <th scope="col">CCCD/CMT</th>
+                                            <th scope="col"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="item in hostedAts">
+                                            <th scope="row">
+                                                {{item.customer.fullName}}
+                                            </th>
+                                            <td>{{item.customer.phoneNumber}}</td>
+                                            <td>{{item.customer.gender ? "Nam" : "Nữ"}}</td>
+                                            <td>{{item.customer.dateOfBirth | date:'dd/MM/yyyy'}}</td>
+                                            <td>{{item.customer.peopleId}}</td>
+                                            <td>
+                                                <ul class="list-unstyled hstack gap-1 mb-0">
+                                                    <li>
+                                                        <button ng-click="removeHostedAt(item)"
+                                                            class="btn btn-soft-danger"><i
+                                                                class="mdi mdi-delete-outline"></i></button>
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="customer-tab" role="tabpanel">
+                            <input class="form-control" type="search" placeholder="Tìm kiếm"
+                                id="search-datatable-customer">
+                            <div class="table-responsive">
+                                <table id="datatable-customer" class="table align-middle table-nowrap table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Họ tên</th>
+                                            <th scope="col">SĐT</th>
+                                            <th scope="col">Giới tính</th>
+                                            <th scope="col">Ngày sinh</th>
+                                            <th scope="col">CCCD/CMT</th>
+                                            <th scope="col"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="item in customers">
+                                            <th scope="row">
+                                                {{item.fullName}}
+                                            </th>
+                                            <td>{{item.phoneNumber}}</td>
+                                            <td>{{item.gender ? "Nam" : "Nữ"}}</td>
+                                            <td>{{item.dateOfBirth | date:'dd/MM/yyyy'}}</td>
+                                            <td>{{item.peopleId}}</td>
+                                            <td>
+                                                <ul class="list-unstyled hstack gap-1 mb-0">
+                                                    <li>
+                                                        <button ng-click="handlerAddCustomer(item)"
+                                                            class="btn btn-soft-success"><i
+                                                                class="mdi mdi-plus"></i></button>
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="add-customer-tab" role="tabpanel">
+                            <form>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label for="peopleId" class="form-label">CCCD/CMND</label>
+                                            <input ng-model="customer.peopleId" class="form-control" id="peopleId">
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label for="fullName" class="form-label">Họ và tên</label>
+                                            <input ng-model="customer.fullName" class="form-control" id="fullName">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label for="phoneNumber" class="form-label">SĐT</label>
+                                            <input ng-model="customer.phoneNumber" class="form-control"
+                                                id="phoneNumber">
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label for="email" class="form-label">Email</label>
+                                            <input ng-model="customer.email" type="email" class="form-control"
+                                                id="email">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label for="dateOfBirth" class="form-label">Ngày sinh</label>
+                                            <input ng-model="customer.dateOfBirth" type="date" class="form-control"
+                                                id="dateOfBirth">
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label for="placeOfBirth" class="form-label">Quê quán</label>
+                                            <input ng-model="customer.placeOfBirth" class="form-control"
+                                                id="placeOfBirth">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="mb-3">
+                                            <label class="form-label">Giới tính</label>
+                                            <div class="d-flex">
+                                                <div class="form-check  form-check-inline">
+                                                    <input ng-model="customer.gender" class="form-check-input"
+                                                        type="radio" id="form-radio-male" ng-value="true">
+                                                    <label class="form-check-label" for="form-radio-male">
+                                                        Nam
+                                                    </label>
+                                                </div>
+                                                <div class="form-check  form-check-inline">
+                                                    <input ng-model="customer.gender" class="form-check-input"
+                                                        type="radio" id="form-radio-female" ng-value="false">
+                                                    <label class="form-check-label" for="form-radio-female">
+                                                        Nữ
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="mb-3">
+                                            <label for="address" class="form-label">Địa chỉ</label>
+                                            <textarea ng-model="customer.address" rows="3" class="form-control"
+                                                id="address"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">
+                                        <button type="button" class="btn btn-secondary btn-sm"
+                                            ng-click="takePicture()">Camera</button> Chụp ảnh cmnd/cccd
+                                    </label>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="card mb-3">
+                                                <div class="card-header">
+                                                    Mặt trước
+                                                </div>
+                                                <div class="card-body">
+                                                    <img ng-src="{{ frontIdCardDisplay }}"
+                                                        style="width: 100%; height: 100%;">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="card mb-3">
+                                                <div class="card-header">
+                                                    Mặt sau
+                                                </div>
+                                                <div class="card-body">
+                                                    <img ng-src="{{ backIdCardDisplay }}"
+                                                        style="width: 100%; height: 100%;">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button ng-click="handlerCreateCustomer()" class="btn btn-success">Thêm khách
+                                    hàng</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button ng-click="modalHostedAt('hide')" class="btn btn-secondary">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="modal-info-room" class="modal fade" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Phòng {{selectRoom.code}}</h5>
+                    <button ng-click="modalInfoRoom('hide')" type="button" class="btn-close"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table mb-2 table-bordered">
+                        <tbody>
+                            <tr>
+                                <th scope="row" style="width: 300px;">Loại phòng</th>
+                                <td>{{room.roomType.name}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Giá phòng</th>
+                                <td>{{(promotionRoomType ? ((room.roomType.price / 100 * promotionRoomType.promotion.percent) >= promotionRoomType.promotion.maxDiscount ? (room.roomType.price - promotionRoomType.promotion.maxDiscount) : (room.roomType.price - (room.roomType.price / 100 * promotionRoomType.promotion.percent))) : room.roomType.price) | currency: '' : 0}}₫</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Diện tích</th>
+                                <td>{{room.roomType.area}}m²</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Hút thuốc</th>
+                                <td>{{room.roomType.isSmoking ? 'Có' : 'Không'}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Phù hợp mới</th>
+                                <td>{{room.roomType.numAdults}} người lớn và {{room.roomType.numChilds}} trẻ em</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Phụ phí người lớn</th>
+                                <td>{{room.roomType.adultSurcharge | currency: '' : 0}}₫/người, thêm tối đa
+                                    {{room.roomType.maxAdultsAdd}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Phụ phí trẻ em</th>
+                                <td>{{room.roomType.childSurcharge | currency: '' : 0}}₫/người, thêm tối đa
+                                    {{room.roomType.maxChildsAdd}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Mô tả</th>
+                                <td>{{room.description}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Chính sách huỷ</th>
+                                <td>{{room.roomType.cancellationPolicy}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Chính sách khác</th>
+                                <td><textarea class="form-control" rows="3" ng-value="room.roomType.otherPolicy" readonly></textarea></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table ng-show="selectRoom.status == 2 || selectRoom.status == 4 || selectRoom.status == 5"
+                        class="table mb-0 table-bordered">
+                        <tbody>
+                            <tr>
+                                <th scope="row" style="width: 300px;">Mã đặt</th>
+                                <td>{{booking.code}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">CCCD/CMND</th>
+                                <td>{{booking.customer.peopleId}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Email</th>
+                                <td>{{booking.customer.email}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">SĐT</th>
+                                <td>{{booking.customer.phoneNumber}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Địa chỉ</th>
+                                <td>{{booking.customer.address}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button ng-click="modalInfoRoom('hide')" type="button"
+                        class="btn btn-secondary waves-effect">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="modal-cancel-room" class="modal fade" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Huỷ phòng {{selectRoom.code}}</h5>
+                    <button ng-click="modalCancelRoom('hide')" type="button" class="btn-close"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table mb-0 table-bordered mb-3">
+                        <tbody>
+                            <tr>
+                                <th scope="row" style="width: 300px;">Loại phòng</th>
+                                <td>{{bookingDetail.room.roomType.name}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Giá phòng</th>
+                                <td>{{bookingDetail.roomPrice |
+                                    currency: '' : 0}}₫</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Ngày nhận</th>
+                                <td>{{bookingDetail.checkinExpected | date:'dd/MM/yyyy'}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Ngày trả</th>
+                                <td>{{bookingDetail.checkoutExpected | date:'dd/MM/yyyy'}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <label for="formrow-note-input" class="form-label">Ghi chú</label>
+                                <textarea ng-model="cancelRoom.note" class="form-control" id="formrow-note-input"
+                                    rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button ng-click="handlerCancelRoom()" class="btn btn-primary">Xác nhận</button>
+                    <button ng-click="modalCancelRoom('hide')" class="btn btn-secondary">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div ng-show="isLoading" class="loader">
+        <div class="loader-inner">
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+        </div>
+    </div>
+</app-layout>

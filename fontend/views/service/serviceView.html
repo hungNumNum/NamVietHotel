@@ -1,0 +1,158 @@
+<app-layout name="">
+
+    <div class="row">
+        <div class="col-md-12">
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                data-bs-whatever="@mdo">Thêm
+                <i class="font-size-16 bx bx-plus"></i>
+            </button>
+            <a type="button" class="btn btn-success" ng-href="/#!/service/type">ServiceType
+                <i class="font-size-16 bx bx-right-arrow-alt"></i>
+            </a>
+        </div>
+    </div>
+    <br>
+    <div ng-show="loading" class="loader"> 
+        <div class="loader-inner">
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal create service-room-->
+    <div class="modal fade" id="exampleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 ng-if="showbut" class="modal-title fs-5" id="exampleModalLabel">Thêm Service</h1>
+                    <h1 ng-if="!showbut" class="modal-title fs-5" id="exampleModalLabel">Cập nhật Service</h1>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="row">
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="formrow-username-input" class="form-label">Tên dịch vụ</label>
+                                    <input ng-model="form.name" type="text" class="form-control"
+                                        id="formrow-username-input" placeholder="Enter Your  Service Name">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="formrow-password-input" class="form-label">Giá</label>
+                                    <input ng-model="form.price" type="number" class="form-control"
+                                        id="formrow-password-input" placeholder="Enter Your Service Price">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col-md-6">
+
+                                <div class="mb-3">
+                                    <label for="formrow-fullname-input" class="form-label">Trạng thái</label><br>
+                                    <input ng-model="form.status" ng-value="true" style="margin-left: 3px;" type="radio"
+                                        class="form-check-input" name="anvaliable" />
+                                    <label style="margin-left: 5px;">Áp dụng</label>
+                                    <input ng-model="form.status" ng-value="false" style="margin-left: 8px;"
+                                        type="radio" class="form-check-input" name="anvaliable" />
+                                    <label style="margin-left: 10px;">Dừng áp dụng</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="formrow-address-input">Service Type</label>
+                                <select ng-model="form.serviceType.id" class="form-select"
+                                    aria-label="Default select example">
+                                    <option ng-repeat="s in serTypes" ng-value="s.id">{{s.name}}</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="formrow-address-input">Mô tả</label>
+                            <textarea ng-model="form.description" id="formrow-address-input" class="form-control"
+                                rows="3" placeholder="Enter Your Description"></textarea>
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button ng-click="close()" class="btn btn-secondary">Đóng</button>
+                    <button ng-if="showbut" ng-click="create()" class="btn btn-success w-md">Thêm</button>
+                    <button ng-if="!showbut" ng-click="update()" class="btn btn-warning w-md">Cập nhật</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <!-- table--- -->
+    <div class="row">
+        <div class="col-12">
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <h4 class="card-title">Danh sách dịch vụ</h4>
+                        <input class="form-control mb-3" type="search" placeholder="Tìm kiếm"
+                        id="search-datatable-services">
+                        <div class="table-responsive">
+                            <table id="datatable-services" class="table table-bordered dt-responsive nowrap w-100">
+
+                                <thead>
+                                    <tr>
+                                        <th>Tên</th>
+                                        <th>Giá</th>
+                                        <th>Trạng thái</th>
+                                        <th>Service Type</th>
+                                        <th>Mô tả</th>
+                                        <th>#</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="s in items | filter:searchName">
+                                        <td>{{s.name}}</td>
+                                        <td>{{s.price}}</td>
+                                        <td>
+                                            <span class="badge rounded-pill font-size-11 "
+                                                ng-class="s.status ? 'bg-success' : 'badge-soft-danger '">{{s.status ?
+                                                'Áp dụng' : 'Dừng áp dụng'}}</span>
+                                        </td>
+                                        <td>{{s.serviceType.name}}</td>
+                                        <td>{{s.description}}</td>
+                                        <td>
+                                            <a ng-click="view(s)" class="btn btn-outline-secondary btn-sm edit"
+                                                title="Edit">
+                                                <i class="fas fa-pencil-alt"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div><!--end col-->
+    </div><!--end row-->
+
+</app-layout>

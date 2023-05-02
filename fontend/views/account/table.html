@@ -1,0 +1,78 @@
+<app-layout name="">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <h5 class="card-header bg-transparent border-bottom text-uppercase">
+                    TÀI KHOẢN
+                </h5>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <a href="/#!/accounts/create" class="btn btn-primary w-md waves-effect waves-light me-1">
+                            <i class="mdi mdi-plus"></i> Tạo tài khoản
+                        </a>
+                        <a href="/#!/accounts/role" class="btn btn-primary w-md waves-effect waves-light">
+                            <i class="mdi mdi-format-list-bulleted"></i> Phân quyền
+                        </a>
+                    </div>
+                    <input class="form-control mb-3" type="search" placeholder="Tìm kiếm"
+                        id="search-datatable-accounts">
+                    <table id="datatable-accounts" class="table table-bordered dt-responsive nowrap w-100">
+
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Tên đăng nhập</th>
+                                <th>Họ và tên</th>
+                                <th>Email</th>
+                                <th>Trạng thái</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in accounts">
+                                <td>
+                                    <b>{{$index + 1}}</b>
+                                </td>
+                                <td>{{item.username}}</td>
+                                <td>{{item.fullName}}</td>
+                                <td>{{item.email}}</td>
+                                <td><span class="badge badge-pill " ng-class="item.status ? 'bg-success' : 'bg-danger'">{{item.status ? 'Đang hoạt động' : 'Ngừng hoạt động'}}</span></td>
+                                <td>
+                                    <a href="/#!/accounts/update/{{item.username}}" class="btn btn-outline-secondary btn-sm edit" title="Chỉnh sửa">
+                                        <i class="fas fa-pencil-alt"></i>
+                                    </a>
+                                    <a ng-show="item.status" ng-click="handlerDeactivateAccount(item)" class="btn btn-outline-danger btn-sm edit" title="Ngừng hoạt động">
+                                        <i class="mdi mdi-cancel"></i>
+                                    </a>
+                                    <a ng-show="!item.status" ng-click="handlerActivateAccount(item)" class="btn btn-outline-success btn-sm edit" title="Đang hoạt động">
+                                        <i class="mdi mdi-check"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div ng-show="isLoading" class="loader"> 
+        <div class="loader-inner">
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+            <div class="loader-line-wrap">
+                <div class="loader-line"></div>
+            </div>
+        </div>
+    </div>
+</app-layout>
